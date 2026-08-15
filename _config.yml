@@ -3,7 +3,6 @@ tagline: "Building a chest X-ray finding classifier in public, one measured resu
 description: >-
   Public record of building Findings, a chest X-ray finding classifier —
   including the runs that came out wrong.
-author: "Ricardo Peralta"
 lang: en
 
 url: "https://ricamp.github.io"

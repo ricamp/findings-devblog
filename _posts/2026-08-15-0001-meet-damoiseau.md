@@ -22,10 +22,11 @@ entry.
 
 The project has a name, a shape, and now a model to point at.
 
-**Findings** detects. A separate app, **Laudo**, writes. Keeping those two apart
-is the whole design bet, and it runs against the current: the obvious move in
-2026 is one vision-language model, image in, paragraph out. I'm not doing that.
-Findings is three replaceable pieces —
+**Findings** detects, and stops there. Turning a finding into finished report
+prose is a separate concern, deliberately left outside this project. Keeping
+those two apart is the whole design bet, and it runs against the current: the
+obvious move in 2026 is one vision-language model, image in, paragraph out. I'm
+not doing that. Findings is three replaceable pieces —
 
 ```
 image encoder → finding head → text generator
@@ -100,6 +101,21 @@ been tested against reality yet.
 2. Post-hoc calibration fit on the validation split.
 3. PhysioNet credentialing, which unlocks MIMIC-CXR and, eventually, report
    generation rather than classification.
+
+## Note — 2026-08-15
+
+This entry originally named a separate app, **Laudo**, as the piece that turns a
+finding into report prose, and carried the line "Findings detects, Laudo
+writes." That framing has been removed throughout.
+
+Laudo is a different project of mine, and tying the two together in public
+implied a dependency that does not exist. Findings stands on its own: it
+develops the models. Where report text is discussed here, it means the text
+generator inside Findings, not another product.
+
+The architectural claim is unchanged — detection and writing stay separate
+components, and this project is not a single image-in-paragraph-out model. Only
+the name of the thing on the other side of that line is gone.
 
 ---
 

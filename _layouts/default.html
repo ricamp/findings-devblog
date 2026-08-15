@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
 <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | strip_newlines | truncate: 180 }}">
-<meta name="author" content="{{ site.author }}">
 
 <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
 <meta property="og:title" content="{{ page.title | default: site.title }}">
@@ -30,7 +29,7 @@
 <header class="topo">
   <div class="topo-interno">
     <a class="marca" href="{{ '/' | relative_url }}">findings/devblog</a>
-    <span class="topo-tag">Findings detects, Laudo writes.</span>
+    <span class="topo-tag">Detection first. The sentence only says what the model can measure.</span>
     <button class="tema-btn" id="tema-btn" type="button"
             aria-label="Alternar tema claro e escuro">tema · t</button>
   </div>
@@ -42,8 +41,8 @@
 
 <footer class="rodape">
   <p>
-    {{ site.title }} — a research and portfolio project by {{ site.author }}.<br>
-    Entries are written in English; the code and its documentation are in Portuguese.
+    {{ site.title }} — a research and portfolio project.<br>
+    Not a medical device. Not cleared by any regulator.
   </p>
   <p>
     <a href="{{ '/feed.xml' | relative_url }}">Atom feed</a>
