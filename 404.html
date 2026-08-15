@@ -1,0 +1,37 @@
+---
+layout: default
+title: "0.4998"
+permalink: /404.html
+---
+
+<p class="rotulo">Route scored · indeterminate zone</p>
+
+<div class="quatro">
+  <p class="quatro-n">0.4998</p>
+  <p class="quatro-linhas">
+    score for route <code id="quatro-rota">—</code><br>
+    zone: <b>indeterminate</b> — below 0.70, above 0.30<br>
+    no affirmative sentence can be generated for this page
+  </p>
+  <p class="quatro-flag">⚑ escalated to human review</p>
+</div>
+
+<p class="sub-lede" style="margin-top:32px">
+  The page you asked for is not here. The system that runs this site only has
+  three things it can say about anything, and for this one it picked the middle
+  one.
+</p>
+
+<p style="font-family:var(--mono);font-size:13px">
+  <a href="{{ '/' | relative_url }}">all entries</a>
+</p>
+
+<script>
+  /* A rota vem do location, nao do Jekyll: o 404 e' servido para qualquer
+     caminho que nao existe, entao o unico lugar que sabe qual foi e' o browser. */
+  (function () {
+    var el = document.getElementById('quatro-rota');
+    var rota = location.pathname.replace('{{ site.baseurl }}', '') || '/';
+    el.textContent = rota.length > 48 ? rota.slice(0, 47) + '…' : rota;
+  })();
+</script>

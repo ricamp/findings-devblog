@@ -1,0 +1,59 @@
+/* ============================================================
+   eggs — estilos do modo damoiseau
+   Par de eggs.js. A corrupcao da tag bugfix nao precisa de CSS:
+   ela mexe so em textContent e color inline.
+
+   Depende de: --mono, --papel, --tinta-2, --linha, --achado
+   ============================================================ */
+
+#damo{
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--papel);
+  display: none;
+}
+#damo.on{ display: block; }
+
+#damo pre{
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 12px;
+  white-space: pre;
+  color: var(--tinta-2);
+  opacity: .85;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* O achado. Opacidade cheia porque e' o unico ponto da tela que a
+   pessoa precisa encontrar sem ninguem apontar. */
+#damo .damo-quente{ color: var(--achado); opacity: 1; }
+
+/* Fundo proprio: sobre a silhueta o texto ficaria ilegivel, e a frase
+   e' a metade do egg — sem ela e' so um desenho. */
+#damo .damo-legenda{
+  position: absolute;
+  left: 50%;
+  bottom: 38px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 48px);
+  background: var(--papel);
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tinta-2);
+  text-align: center;
+}
+#damo .damo-legenda b{ color: var(--achado); font-weight: 600; }
+
+@media (max-width: 640px){
+  #damo pre{ font-size: 9px; line-height: 10px; }
+  #damo .damo-legenda{ font-size: 12px; padding: 9px 14px; }
+}

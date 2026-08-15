@@ -1,0 +1,136 @@
+/* ============================================================
+   threshold — estilos do widget de limiar vivo
+   Par de threshold.js.
+
+   Depende de: --mono, --papel, --pergaminho, --card, --linha,
+   --linha-forte, --tinta, --tinta-2, --tinta-3, --achado,
+   --achado-suave, --normal, --revisao, --revisao-suave, --raio
+   ============================================================ */
+
+.thr-vivo{
+  margin: 28px 0;
+  font-family: var(--mono);
+}
+
+/* Fechado o widget e' uma linha, nao um painel: dentro do texto do post
+   um bloco sempre aberto rouba a leitura de tudo em volta. */
+.thr-resumo{
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--pergaminho);
+  color: var(--tinta-2);
+  border: 1px solid var(--linha-forte);
+  border-radius: 7px;
+  padding: 7px 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.thr-resumo b{ color: var(--achado); font-weight: 600; }
+.thr-resumo span{ color: var(--tinta-3); }
+.thr-resumo:hover{ background: var(--papel); border-color: var(--achado); }
+.thr-resumo.aberto{ border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+.thr-corpo{
+  border: 1px solid var(--linha-forte);
+  border-top: 0;
+  border-radius: 0 var(--raio) var(--raio) var(--raio);
+  background: var(--card);
+  padding: 18px 20px 16px;
+}
+
+/* O par histograma/eixo tem que rolar junto e alinhado por caractere:
+   sao duas linhas do mesmo desenho, e desalinhar a seta do pico e' pior
+   que cortar o desenho. */
+.thr-titulo{
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+/* Seletor de dois niveis de proposito: o widget mora dentro de .prosa, e
+   `.prosa pre` (moldura, fundo, 13.5px) ganharia de uma classe sozinha e
+   quebraria a grade de caracteres. */
+.thr-vivo pre.thr-hist,
+.thr-vivo pre.thr-eixo{
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 12px;
+  white-space: pre;
+  overflow-x: auto;
+  /* o glifo de bloco estoura a caixa de linha em alguns fallbacks de fonte e
+     acorda uma barra vertical de 1px; nao ha o que rolar na vertical aqui */
+  overflow-y: hidden;
+  color: var(--tinta-2);
+}
+.thr-vivo pre.thr-eixo{ color: var(--tinta-3); margin-bottom: 4px; }
+.thr-marca{ color: var(--achado); }
+.thr-vazio{ opacity: .4; }
+
+.thr-controle{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: var(--tinta-2);
+}
+.thr-controle b{ color: var(--achado); font-weight: 600; }
+.thr-controle input[type="range"]{
+  flex: 1;
+  min-width: 200px;
+  accent-color: var(--achado);
+}
+
+.thr-saida{
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 4px 28px;
+  justify-content: start;
+  margin: 18px 0 0;
+}
+.thr-saida div{ min-width: 0; }
+.thr-saida dt{
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+.thr-saida dd{
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.thr-veredito{
+  margin: 16px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+.thr-veredito b{ font-weight: 600; }
+.thr-morta{ background: var(--achado-suave); border-color: var(--achado); color: var(--achado); }
+.thr-fraca{ background: var(--revisao-suave); border-color: var(--revisao); color: var(--flag-txt); }
+.thr-ok{ background: transparent; border-color: var(--normal); color: var(--normal); }
+
+.thr-fonte{
+  margin: 12px 0 0;
+  font-size: 11px;
+  color: var(--tinta-3);
+  line-height: 1.5;
+}
+
+@media (max-width: 560px){
+  .thr-saida{ grid-template-columns: repeat(2, auto); gap: 10px 24px; }
+}

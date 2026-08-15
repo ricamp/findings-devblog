@@ -60,26 +60,17 @@
   /* ============================================================
      Efeitos. Assinatura: (grade, t em segundos) -> string com \n
      ============================================================ */
-  var EFEITOS = {
+  /* ============================================================
+     Efeitos que precisam tingir um trecho devolvem
+     { l: [linhas], t: [[ini, fim, classe], ...] } em vez de string.
+     Quem devolve string continua indo por textContent, que e' mais
+     barato — so quem precisa de cor paga o innerHTML.
+     ============================================================ */
+  function escapar(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
 
-    /* Colunas esparsas caindo devagar. */
-    chuva: function (g, t) {
-      var GLIFOS = '·:¦|';
-      var out = [];
-      for (var y = 0; y < g.rows; y++) {
-        var linha = '';
-        for (var x = 0; x < g.cols; x++) {
-          /* so ~12% das colunas vivem — cheio demais vira cortina */
-          if (hash(x, 7) > 0.12) { linha += ' '; continue; }
-          var vel = 0.6 + hash(x, 13) * 1.1;
-          var fase = (t * vel + hash(x, 29) * 20) % (g.rows + 6);
-          var d = fase - y;
-          linha += (d >= 0 && d < 4) ? GLIFOS[3 - Math.floor(d)] : ' ';
-        }
-        out.push(linha);
-      }
-      return out.join('\n');
-    },
+  var EFEITOS = {
 
     /* Grade fixa: nada translada, so o peso do glifo muda. */
     densidade: function (g, t) {
@@ -231,15 +222,156 @@
         out.push(linha);
       }
       return out.join('\n');
+    },
+
+    /* ----------------------------------------------------------
+       Janela de intensidade deslizando sobre um campo de tecido.
+       O campo e' FIXO — so a janela se move. E' isso que faz o
+       efeito ler como um controle sendo girado e nao como ruido:
+       as mesmas estruturas reaparecem quando a janela volta.
+       ---------------------------------------------------------- */
+    janela: function (g, t) {
+      var RAMPA = ' .:-=+*#';
+      var out = [];
+      var nivel  = 0.50 + Math.sin(t * 0.23) * 0.26;
+      var largura = 0.30 + Math.sin(t * 0.17 + 1.3) * 0.17;   /* nunca chega a zero */
+      var baixo = nivel - largura / 2, alto = nivel + largura / 2;
+
+      for (var y = 0; y < g.rows; y++) {
+        var linha = '';
+        for (var x = 0; x < g.cols; x++) {
+          var v = ruido(x * 0.075, y * 0.26) * 0.68 + ruido(x * 0.19, y * 0.62) * 0.22
+                + Math.sin(y * 0.55 + x * 0.02) * 0.05 + 0.05;
+          var w = (v - baixo) / (alto - baixo);
+          /* os dois lados saem: o que esta abaixo da janela satura em preto e o
+             que esta acima satura em branco. Cortar so um lado deixaria metade
+             da tela sempre cheia, e a janela pararia de parecer uma janela. */
+          if (w <= 0 || w >= 1) { linha += ' '; continue; }
+          linha += RAMPA[Math.max(1, Math.min(RAMPA.length - 1, Math.floor(w * RAMPA.length)))];
+        }
+        out.push(linha);
+      }
+      return out.join('\n');
+    },
+
+    /* ----------------------------------------------------------
+       Mapa de atencao passeando atras do texto. O nucleo vai tingido
+       de --achado; o anel em volta existe para o blob ter borda — sem
+       ele a mancha se dissolve no fundo e vira densidade comum.
+       ---------------------------------------------------------- */
+    heatmap: function (g, t) {
+      var RAMPA = ' ·:-=+*#';
+      var asp = g.cols / g.rows / 6.5;
+      var linhas = [], tintas = [];
+      var cx = 0.5 + Math.sin(t * 0.21) * 0.34;
+      var cy = 0.5 + Math.sin(t * 0.34 + 2.0) * 0.30;
+      var raio = 0.085 + Math.sin(t * 0.9) * 0.016;
+
+      for (var y = 0; y < g.rows; y++) {
+        var linha = '', marcas = [], corrida = null;
+        for (var x = 0; x < g.cols; x++) {
+          var dx = (x / g.cols - cx) * asp, dy = (y + 0.5) / g.rows - cy;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          var n = Math.exp(-Math.pow(d / raio, 2))
+                + Math.exp(-Math.pow((d - raio * 1.65) / (raio * 0.30), 2)) * 0.42;
+          /* granulacao: mapa de atencao de verdade nao sai liso, e liso demais
+             le como gradiente decorativo */
+          n *= 0.72 + ruido(x * 0.34, y * 0.7 + t * 0.5) * 0.5;
+          var i = Math.max(0, Math.min(RAMPA.length - 1, Math.floor(n * RAMPA.length)));
+          linha += RAMPA[i];
+
+          if (i >= 5) {
+            if (corrida) corrida[1] = x + 1;
+            else { corrida = [x, x + 1, 'fx-quente']; marcas.push(corrida); }
+          } else corrida = null;
+        }
+        linhas.push(linha); tintas.push(marcas);
+      }
+      return { l: linhas, t: tintas };
+    },
+
+    /* ----------------------------------------------------------
+       Rastro do cursor. O buffer decai sozinho, entao o desenho fica
+       na tela um instante depois da mao passar.
+
+       A textura de base existe porque sem ela a faixa fica morta para
+       quem nao tem ponteiro — toque, teclado, leitor de tela. Com ela
+       o efeito degrada para um fundo comum em vez de sumir.
+       ---------------------------------------------------------- */
+    rastro: function (g, t, alvo) {
+      var RAMPA = ' ·:-=+*#';
+      var e = alvo.estado;
+
+      if (!e || e.cols !== g.cols || e.rows !== g.rows) {
+        e = alvo.estado = { buf: new Float32Array(g.cols * g.rows), cols: g.cols, rows: g.rows,
+                            mx: -99, my: -99, dentro: false };
+        ligarPonteiro(alvo, e);
+      }
+
+      /* a celula mono e' cerca de duas vezes mais alta que larga; sem corrigir,
+         o rastro sai achatado e parece um risco horizontal */
+      var ASP = 2.0;
+      var out = [];
+      for (var y = 0; y < g.rows; y++) {
+        var linha = '';
+        for (var x = 0; x < g.cols; x++) {
+          var k = y * g.cols + x;
+          e.buf[k] *= 0.90;
+          if (e.dentro) {
+            var dx = (x - e.mx) / ASP, dy = y - e.my, d2 = dx * dx + dy * dy;
+            if (d2 < 26) e.buf[k] = Math.min(1.15, e.buf[k] + Math.exp(-d2 / 7) * 0.55);
+          }
+          var base = Math.pow(Math.max(0, ruido(x * 0.09 - t * 0.14, y * 0.28) - 0.42) / 0.58, 1.7) * 0.55;
+          var v = Math.min(1, base + e.buf[k]);
+          var i = Math.floor(v * RAMPA.length);
+          linha += RAMPA[Math.max(0, Math.min(RAMPA.length - 1, i))];
+        }
+        out.push(linha);
+      }
+      return out.join('\n');
     }
   };
 
-  var POOL = ['chuva', 'densidade', 'glitch', 'contorno', 'pulso', 'dither'];
+  /* O ponteiro e' escutado no hospede, nao na camada: a camada tem
+     pointer-events:none para nao roubar clique de link nenhum. */
+  function ligarPonteiro(alvo, e) {
+    var hospede = alvo.el.parentNode;
+    if (!hospede) return;
+    hospede.addEventListener('pointermove', function (ev) {
+      var r = alvo.el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      e.mx = (ev.clientX - r.left) / r.width * e.cols;
+      e.my = (ev.clientY - r.top) / r.height * e.rows;
+      e.dentro = true;
+    });
+    hospede.addEventListener('pointerleave', function () { e.dentro = false; });
+  }
+
+  var POOL = ['densidade', 'glitch', 'contorno', 'pulso', 'dither', 'janela', 'heatmap', 'rastro'];
 
   /* ============================================================
      Loop unico para todas as camadas, a ~12fps. ASCII nao ganha
      nada com 60 — e a 60 o custo de reescrever o texto aparece.
      ============================================================ */
+  /* String vai por textContent; { l, t } por innerHTML com os trechos
+     tingidos. Escapar e' obrigatorio aqui: o efeito contorno emite '\' e '/',
+     e um efeito futuro pode emitir '<'. */
+  function pintar(el, r) {
+    if (typeof r === 'string') { el.textContent = r; return; }
+    var h = '';
+    for (var y = 0; y < r.l.length; y++) {
+      var linha = r.l[y], marcas = r.t[y], i = 0, saida = '';
+      for (var k = 0; marcas && k < marcas.length; k++) {
+        saida += escapar(linha.slice(i, marcas[k][0]))
+              +  '<span class="' + marcas[k][2] + '">'
+              +  escapar(linha.slice(marcas[k][0], marcas[k][1])) + '</span>';
+        i = marcas[k][1];
+      }
+      h += saida + escapar(linha.slice(i)) + (y < r.l.length - 1 ? '\n' : '');
+    }
+    el.innerHTML = h;
+  }
+
   function iniciarCamadas() {
     var nos = document.querySelectorAll('.fx-camada');
     if (!nos.length) return;
@@ -252,7 +384,7 @@
       var fn = EFEITOS[nome];
       if (!fn) continue;
       el.setAttribute('data-fx-ativo', nome);
-      alvos.push({ el: el, fn: fn, g: medir(el) });
+      alvos.push({ el: el, fn: fn, g: medir(el), estado: null });
     }
     if (!alvos.length) return;
 
@@ -266,7 +398,7 @@
     /* Sem movimento: congela num instante arbitrario e nao agenda nada. */
     if (SEM_MOVIMENTO.matches) {
       for (var m = 0; m < alvos.length; m++) {
-        alvos[m].el.textContent = alvos[m].fn(alvos[m].g, 3);
+        pintar(alvos[m].el, alvos[m].fn(alvos[m].g, 3, alvos[m]));
       }
       return;
     }
@@ -278,7 +410,7 @@
       ultimo = agora;
       var t = (agora - t0) / 1000;
       for (var n = 0; n < alvos.length; n++) {
-        alvos[n].el.textContent = alvos[n].fn(alvos[n].g, t);
+        pintar(alvos[n].el, alvos[n].fn(alvos[n].g, t, alvos[n]));
       }
     })(t0);
   }

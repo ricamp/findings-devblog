@@ -36,6 +36,10 @@
   overflow: hidden;
 }
 
+/* Nucleo do heatmap. Opacidade quase cheia de proposito: a camada inteira ja
+   esta em .36, e um --achado por baixo disso nao se distingue de cinza. */
+.fx-camada .fx-quente{ color: var(--achado); opacity: .95; }
+
 /* O mesmo valor de opacidade nao da a mesma presenca nos dois temas: no claro
    o glifo se apaga cedo, no escuro ele salta. Os dois numeros foram
    equilibrados no olho, nao derivados um do outro. */
