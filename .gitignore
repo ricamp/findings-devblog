@@ -1,0 +1,21 @@
+# Build do Jekyll — o GitHub Pages compila no servidor.
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+
+# Ruby, caso um dia rode o preview local.
+vendor/
+.bundle/
+Gemfile.lock
+
+.DS_Store
+
+# Barreira, nao conveniencia: nenhuma imagem de paciente entra num repo publico.
+# O site so aceita figuras derivadas de dataset publico (NIH), em assets/.
+*.dcm
+*.nii
+*.nii.gz
+data/
+checkpoints/
+*.pt

@@ -1,0 +1,37 @@
+---
+layout: default
+---
+
+<p class="lede">{{ site.tagline }}</p>
+
+<p class="sub-lede">
+  <b>Findings</b> is a computer vision project for medical imaging: it detects a
+  radiographic finding and turns it into a sentence of report text. It pairs with
+  a separate app, <b>Laudo</b>, which does the writing. This devblog is the public
+  record of how that gets built — including the runs that came out wrong.
+</p>
+
+<p class="rotulo" style="margin-top:44px">Entries · newest first</p>
+
+<ul class="entradas">
+  {% for post in site.posts %}
+  <li class="entrada">
+    <p class="entrada-meta">
+      <span>{{ post.numero }}</span>
+      <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+      {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
+    </p>
+    <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+    {% if post.resumo %}<p class="entrada-resumo">{{ post.resumo }}</p>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+<p class="aviso">
+  <b>Not a medical device.</b> This is a research and portfolio project. It is
+  not cleared by ANVISA, the FDA, or any regulator, and nothing it produces
+  should be used to make a decision about a patient. Every output the system
+  generates carries a human-review flag by design — a radiologist reads it, and
+  the radiologist signs it. All data used here is from public research datasets.
+  No patient data from clinical practice enters this project.
+</p>

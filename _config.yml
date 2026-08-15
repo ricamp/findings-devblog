@@ -1,0 +1,34 @@
+title: "Findings — devblog"
+tagline: "Building a chest X-ray finding classifier in public, one measured result at a time."
+description: >-
+  Public record of building Findings, a chest X-ray finding classifier —
+  including the runs that came out wrong.
+author: "Ricardo Peralta"
+lang: en
+
+url: "https://ricamp.github.io"
+baseurl: "/findings-devblog"
+
+permalink: /:year/:month/:day/:title/
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  hard_wrap: false
+
+# jekyll-feed e' um dos plugins que o GitHub Pages ja traz — nao precisa build local.
+plugins:
+  - jekyll-feed
+
+feed:
+  path: feed.xml
+
+sass:
+  style: compressed
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor

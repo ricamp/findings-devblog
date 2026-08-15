@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+<meta name="description" content="{{ page.excerpt | default: site.description | strip_html | strip_newlines | truncate: 180 }}">
+<meta name="author" content="{{ site.author }}">
+
+<meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+<meta property="og:title" content="{{ page.title | default: site.title }}">
+<meta property="og:description" content="{{ page.excerpt | default: site.description | strip_html | strip_newlines | truncate: 180 }}">
+<meta property="og:site_name" content="{{ site.title }}">
+
+<link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | relative_url }}">
+
+<script>
+  /* Tema antes da pintura, para nao piscar branco no escuro. */
+  (function () {
+    var g = localStorage.getItem('findings-tema');
+    var escuro = g ? g === 'escuro'
+                   : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (escuro) document.documentElement.setAttribute('data-tema', 'escuro');
+  })();
+</script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="{{ '/' | relative_url }}">findings/devblog</a>
+    <span class="topo-tag">Findings detects, Laudo writes.</span>
+    <button class="tema-btn" id="tema-btn" type="button"
+            aria-label="Alternar tema claro e escuro">tema · t</button>
+  </div>
+</header>
+
+<main class="envelope">
+  {{ content }}
+</main>
+
+<footer class="rodape">
+  <p>
+    {{ site.title }} — a research and portfolio project by {{ site.author }}.<br>
+    Entries are written in English; the code and its documentation are in Portuguese.
+  </p>
+  <p>
+    <a href="{{ '/feed.xml' | relative_url }}">Atom feed</a>
+  </p>
+</footer>
+
+<script>
+  (function () {
+    var raiz = document.documentElement;
+    var btn = document.getElementById('tema-btn');
+
+    function alterna() {
+      var escuro = raiz.getAttribute('data-tema') === 'escuro';
+      if (escuro) raiz.removeAttribute('data-tema');
+      else raiz.setAttribute('data-tema', 'escuro');
+      localStorage.setItem('findings-tema', escuro ? 'claro' : 'escuro');
+    }
+
+    btn.addEventListener('click', alterna);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 't' && e.key !== 'T') return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      var alvo = e.target.tagName;
+      if (alvo === 'INPUT' || alvo === 'TEXTAREA' || e.target.isContentEditable) return;
+      alterna();
+    });
+  })();
+</script>
+
+</body>
+</html>

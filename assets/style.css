@@ -1,0 +1,321 @@
+/* ============================================================
+   Findings devblog — folha de estilo do site
+   Derivada de findings-agent-identidade/tokens.css (v1.3)
+   Regra semantica: serifa = voz humana · mono = voz da maquina
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap");
+
+:root{
+  --papel:       #FAF9F5;
+  --pergaminho:  #F0EEE6;
+  --linha:       #E3DFD3;
+  --linha-forte: #CFC9B8;
+
+  --tinta:       #1F1E1B;
+  --tinta-2:     #6E6A5E;
+  --tinta-3:     #8D8775;
+
+  --achado:        #A95335;
+  --achado-suave:  #EAD3C7;
+  --normal:        #60724A;
+  --revisao:       #856823;
+  --revisao-suave: #F0E4C4;
+
+  --card:      #FFFFFF;
+  --flag-txt:  #5E4A14;
+
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono:  "JetBrains Mono", "SF Mono", "Cascadia Mono", Consolas, monospace;
+
+  --raio:    8px;
+  --raio-lg: 10px;
+
+  --medida: 68ch;   /* largura de leitura */
+}
+
+[data-tema="escuro"]{
+  --papel:       #0E0F10;
+  --pergaminho:  #17181A;
+  --card:        #1D1E21;
+  --linha:       #2A2C30;
+  --linha-forte: #3D4046;
+
+  --tinta:       #E9EAEC;
+  --tinta-2:     #9EA1A6;
+  --tinta-3:     #6E7175;
+
+  --achado:        #C76C4B;
+  --achado-suave:  #33221B;
+  --normal:        #768D5B;
+  --revisao:       #B08A2E;
+  --revisao-suave: #2B2617;
+  --flag-txt:      #E0C079;
+
+  color-scheme: dark;
+}
+
+*{ box-sizing: border-box; }
+
+html{ -webkit-text-size-adjust: 100%; }
+
+body{
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.65;
+}
+::selection{ background: var(--achado-suave); }
+
+code, pre, .mono{ font-family: var(--mono); }
+
+a{ color: var(--achado); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover{ text-decoration-thickness: 2px; }
+
+.envelope{
+  max-width: var(--medida);
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ---- rotulo mono (kicker) ---- */
+.rotulo{
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
+/* ============================================================
+   TOPO
+   ============================================================ */
+.topo{
+  border-bottom: 1px solid var(--linha);
+  background: var(--pergaminho);
+  margin-bottom: 48px;
+}
+.topo-interno{
+  max-width: var(--medida);
+  margin: 0 auto;
+  padding: 26px 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.marca{
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--tinta);
+  text-decoration: none;
+}
+.marca:hover{ color: var(--achado); }
+.topo-tag{
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tinta-2);
+}
+.tema-btn{
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  background: transparent;
+  color: var(--tinta-2);
+  border: 1px solid var(--linha-forte);
+  border-radius: 7px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.tema-btn:hover{ background: var(--papel); color: var(--tinta); }
+
+/* ============================================================
+   INDICE
+   ============================================================ */
+.lede{
+  font-size: 21px;
+  line-height: 1.55;
+  color: var(--tinta);
+  margin: 0 0 8px;
+}
+.sub-lede{ color: var(--tinta-2); margin-top: 0; }
+
+.entradas{ list-style: none; padding: 0; margin: 40px 0 0; }
+.entrada{
+  padding: 24px 0;
+  border-top: 1px solid var(--linha);
+}
+.entrada:last-child{ border-bottom: 1px solid var(--linha); }
+.entrada-meta{
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tinta-3);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.entrada-titulo{
+  font-size: 22px;
+  line-height: 1.3;
+  margin: 0 0 6px;
+}
+.entrada-titulo a{ color: var(--tinta); text-decoration: none; }
+.entrada-titulo a:hover{ color: var(--achado); text-decoration: underline; }
+.entrada-resumo{ color: var(--tinta-2); margin: 0; font-size: 17px; }
+
+.etiqueta{
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .06em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--linha-forte);
+  color: var(--tinta-2);
+}
+
+/* ============================================================
+   ENTRADA
+   ============================================================ */
+.cabeca{ margin-bottom: 40px; }
+.cabeca h1{
+  font-size: 34px;
+  line-height: 1.22;
+  margin: 6px 0 14px;
+  letter-spacing: -.01em;
+}
+.cabeca-meta{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--tinta-2);
+  display: flex;
+  gap: 8px 18px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid var(--linha);
+}
+.cabeca-meta b{ color: var(--tinta-3); font-weight: 400; }
+
+.prosa h2{
+  font-size: 24px;
+  margin: 48px 0 14px;
+  line-height: 1.3;
+  padding-top: 10px;
+  border-top: 1px solid var(--linha);
+}
+.prosa h3{ font-size: 20px; margin: 34px 0 10px; }
+.prosa p{ margin: 0 0 20px; }
+.prosa strong{ font-weight: 600; }
+
+.prosa blockquote{
+  margin: 24px 0;
+  padding: 4px 0 4px 20px;
+  border-left: 3px solid var(--achado);
+  color: var(--tinta-2);
+  font-style: italic;
+}
+
+.prosa code{
+  font-size: .85em;
+  background: var(--pergaminho);
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.prosa pre{
+  background: var(--pergaminho);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.prosa pre code{
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Tabelas de metricas: mono, porque sao voz da maquina. */
+.tabela-rolagem{ overflow-x: auto; margin: 24px 0; }
+.prosa table{
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+.prosa th, .prosa td{
+  text-align: left;
+  padding: 9px 14px 9px 0;
+  border-bottom: 1px solid var(--linha);
+  vertical-align: top;
+}
+.prosa th{
+  color: var(--tinta-3);
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-size: 11px;
+  border-bottom-color: var(--linha-forte);
+}
+
+.prosa img{ max-width: 100%; height: auto; border-radius: var(--raio); }
+
+.prosa hr{
+  border: 0;
+  border-top: 1px solid var(--linha);
+  margin: 44px 0;
+}
+
+/* ---- aviso de nao-dispositivo-medico ---- */
+.aviso{
+  margin-top: 56px;
+  background: var(--revisao-suave);
+  border: 1px solid var(--revisao);
+  border-radius: var(--raio);
+  padding: 16px 20px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--flag-txt);
+}
+.aviso b{ font-weight: 600; }
+
+.navega{
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--linha);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.rodape{
+  max-width: var(--medida);
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+  border-top: 1px solid var(--linha);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tinta-3);
+}
+.rodape a{ color: var(--tinta-2); }
+
+@media (max-width: 640px){
+  body{ font-size: 17px; }
+  .cabeca h1{ font-size: 27px; }
+  .prosa h2{ font-size: 21px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

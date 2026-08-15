@@ -1,0 +1,34 @@
+---
+layout: default
+---
+<article>
+
+  <header class="cabeca">
+    <p class="rotulo">Entry {{ page.numero }}{% if page.tag %} · {{ page.tag }}{% endif %}</p>
+    <h1>{{ page.title }}</h1>
+    <p class="cabeca-meta">
+      <span><b>Date</b> {{ page.date | date: "%Y-%m-%d" }}</span>
+      {% if page.model %}<span><b>Model</b> {{ page.model }}</span>{% endif %}
+      {% if page.commit %}<span><b>Commit</b> <code>{{ page.commit }}</code></span>{% endif %}
+    </p>
+  </header>
+
+  <div class="prosa">
+    {{ content }}
+  </div>
+
+  <p class="aviso">
+    <b>Not a medical device.</b> Findings is a research and portfolio project. It
+    is not cleared by ANVISA, the FDA, or any regulator, and nothing it produces
+    should be used to make a decision about a patient. Every output carries a
+    mandatory human-review flag by design. All data used here comes from public
+    research datasets.
+  </p>
+
+  <nav class="navega">
+    {% if page.previous %}<div>← earlier · <a href="{{ page.previous.url | relative_url }}">{{ page.previous.title }}</a></div>{% endif %}
+    {% if page.next %}<div>later → <a href="{{ page.next.url | relative_url }}">{{ page.next.title }}</a></div>{% endif %}
+    <div style="margin-top:14px"><a href="{{ '/' | relative_url }}">all entries</a></div>
+  </nav>
+
+</article>
