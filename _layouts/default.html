@@ -52,6 +52,22 @@
 
 <script>
   (function () {
+    /* Tabela de metricas e' o conteudo tipico daqui e a que mais estoura em
+       tela estreita. O kramdown gera <table> puro, entao a moldura de rolagem
+       tem que ser posta depois — sem isso a pagina inteira rola de lado. */
+    var tabelas = document.querySelectorAll('.prosa table');
+    for (var i = 0; i < tabelas.length; i++) {
+      var t = tabelas[i];
+      if (t.parentNode.classList.contains('tabela-rolagem')) continue;
+      var moldura = document.createElement('div');
+      moldura.className = 'tabela-rolagem';
+      moldura.setAttribute('tabindex', '0');
+      t.parentNode.insertBefore(moldura, t);
+      moldura.appendChild(t);
+    }
+  })();
+
+  (function () {
     var raiz = document.documentElement;
     var btn = document.getElementById('tema-btn');
 

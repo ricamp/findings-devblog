@@ -243,10 +243,19 @@ a:hover{ text-decoration-thickness: 2px; }
 }
 
 /* Tabelas de metricas: mono, porque sao voz da maquina. */
-.tabela-rolagem{ overflow-x: auto; margin: 24px 0; }
+.tabela-rolagem{
+  overflow-x: auto;
+  margin: 24px 0;
+  /* A moldura e' focavel (tabindex) para quem navega por teclado alcancar a
+     rolagem; sem isto o conteudo cortado fica inacessivel sem mouse. */
+  outline-offset: 3px;
+}
+.tabela-rolagem table{ margin: 0; }
 .prosa table{
   border-collapse: collapse;
-  width: 100%;
+  /* min-width, nao width: dentro da moldura de rolagem a tabela precisa poder
+     passar da largura do texto em vez de espremer as colunas. */
+  min-width: 100%;
   font-family: var(--mono);
   font-size: 13.5px;
 }
