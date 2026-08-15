@@ -97,14 +97,16 @@ a:hover{ text-decoration-thickness: 2px; }
   background: var(--pergaminho);
   margin-bottom: 48px;
 }
+/* Mais largo que --medida de proposito: a tagline nao cabe na largura de
+   leitura, e com flex-wrap ela quebrava o topo em tres linhas. */
 .topo-interno{
-  max-width: var(--medida);
+  max-width: 92ch;
   margin: 0 auto;
   padding: 26px 24px;
   display: flex;
   align-items: baseline;
   gap: 16px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .marca{
   font-family: var(--mono);
@@ -119,12 +121,24 @@ a:hover{ text-decoration-thickness: 2px; }
   font-family: var(--mono);
   font-size: 12px;
   color: var(--tinta-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+/* Em tela estreita a tagline sai inteira em vez de espremer a marca. */
+@media (max-width: 860px){
+  .topo-tag{ display: none; }
 }
 .tema-btn{
   margin-left: auto;
+  flex: none;
   font-family: var(--mono);
   font-size: 12px;
-  background: transparent;
+  /* pergaminho, nao transparent: a camada ascii-fx fica atras do topo e
+     atravessaria a caixa do botao. E' a cor da propria faixa, entao nada muda
+     visualmente — so para de vazar. */
+  background: var(--pergaminho);
   color: var(--tinta-2);
   border: 1px solid var(--linha-forte);
   border-radius: 7px;

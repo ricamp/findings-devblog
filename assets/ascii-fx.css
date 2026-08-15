@@ -1,0 +1,52 @@
+/* ============================================================
+   ascii-fx — camada de animacao ASCII de fundo
+   Par de ascii-fx.js. Os dois sao autocontidos: para reaproveitar
+   em outro projeto, copie os dois e garanta as variaveis abaixo.
+
+   Depende de: --mono, --tinta-2, --tinta-3 (tokens.css)
+   ============================================================ */
+
+/* O container precisa estabelecer contexto de posicionamento e cortar o
+   excesso — a grade de caracteres e' sempre um pouco maior que a caixa. */
+.fx-hospede{
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tudo que deve ficar ACIMA da animacao precisa de contexto proprio.
+   Sem isso o conteudo empata com a camada e a ordem vira sorte. */
+.fx-hospede > :not(.fx-camada){
+  position: relative;
+  z-index: 1;
+}
+
+.fx-camada{
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 12px;
+  letter-spacing: 0;
+  white-space: pre;
+  color: var(--tinta-3);
+  opacity: .36;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* O mesmo valor de opacidade nao da a mesma presenca nos dois temas: no claro
+   o glifo se apaga cedo, no escuro ele salta. Os dois numeros foram
+   equilibrados no olho, nao derivados um do outro. */
+[data-tema="escuro"] .fx-camada{
+  color: var(--tinta-2);
+  opacity: .28;
+}
+
+/* Sem movimento a camada vira textura fixa — continua legivel como fundo,
+   so nao anima. O JS congela num instante arbitrario. */
+@media (prefers-reduced-motion: reduce){
+  .fx-camada{ opacity: .20; }
+  [data-tema="escuro"] .fx-camada{ opacity: .16; }
+}
