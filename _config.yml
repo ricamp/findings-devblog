@@ -1,8 +1,11 @@
 title: "Findings — devblog"
-tagline: "Building a chest X-ray finding classifier in public, one measured result at a time."
+# Findings e' o projeto, nao um modelo. Damoiseau (torax) foi o primeiro; os
+# textos de nivel de site falam do projeto para nao precisarem de edicao a cada
+# modelo novo. Os posts continuam nomeando o modelo de que tratam.
+tagline: "Training AI vision models in public, one measured result at a time."
 description: >-
-  Public record of building Findings, a chest X-ray finding classifier —
-  including the runs that came out wrong.
+  Public record of building Findings — training AI vision models for medical
+  imaging, including the runs that came out wrong.
 lang: en
 
 url: "https://ricamp.github.io"

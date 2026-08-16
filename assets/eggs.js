@@ -49,7 +49,9 @@
     var MONO = 'font-family:monospace';
 
     console.log('%c' + ARTE, 'color:#A95335;' + MONO + ';font-size:11px;line-height:1.15');
-    console.log('%cDamoiseau v1%c · chest X-ray finding classifier · built in public',
+    /* O banner e' do projeto, nao de um modelo: nomear Damoiseau aqui obrigaria
+       a editar este arquivo a cada modelo novo, e ja sao dois em paralelo. */
+    console.log('%cFindings%c · training AI vision models · built in public',
                 'color:#A95335;font-weight:700;' + MONO, 'color:#6E6A5E;' + MONO);
     console.log('%cNot a medical device. Every output carries a human-review flag by design.',
                 'color:#856823;' + MONO);
