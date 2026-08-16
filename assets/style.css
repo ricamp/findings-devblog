@@ -125,6 +125,12 @@ a:hover{ text-decoration-thickness: 2px; }
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  /* Halo de papel limpo em volta da legenda. A camada de fundo cobre o header
+     inteiro, e o glitch passando entre as letras daqui le como se a propria
+     legenda estivesse falhando — o efeito e' da marca, nao dela.
+     box-shadow em vez de padding: nao mexe em uma linha do layout flex. */
+  background: var(--pergaminho);
+  box-shadow: 0 0 0 5px var(--pergaminho);
 }
 /* Em tela estreita a tagline sai inteira em vez de espremer a marca. */
 @media (max-width: 860px){
@@ -316,6 +322,43 @@ a:hover{ text-decoration-thickness: 2px; }
   border-top: 1px solid var(--linha);
   font-family: var(--mono);
   font-size: 13px;
+}
+
+/* ============================================================
+   404 — a pagina responde na lingua do proprio sistema
+   ============================================================ */
+.quatro{
+  background: var(--pergaminho);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 28px 30px;
+  font-family: var(--mono);
+  margin-top: 14px;
+}
+.quatro-n{
+  font-size: 44px;
+  line-height: 1.1;
+  letter-spacing: .04em;
+  color: var(--tinta);
+  margin: 0 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+.quatro-linhas{
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--tinta-2);
+  margin: 0;
+}
+.quatro-linhas b{ color: var(--revisao); font-weight: 600; }
+.quatro-flag{
+  display: inline-block;
+  margin: 16px 0 0;
+  background: var(--revisao-suave);
+  border: 1px solid var(--revisao);
+  color: var(--flag-txt);
+  padding: 4px 11px;
+  border-radius: 5px;
+  font-size: 12px;
 }
 
 .rodape{

@@ -11,8 +11,14 @@
 <meta property="og:description" content="{{ page.excerpt | default: site.description | strip_html | strip_newlines | truncate: 180 }}">
 <meta property="og:site_name" content="{{ site.title }}">
 
-<link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/ascii-fx.css' | relative_url }}">
+<!-- Carimbo de build nos assets. Sem ele o navegador de quem ja visitou o site
+     serve o CSS e o JS antigos depois do deploy, e uma correcao publicada
+     simplesmente nao chega — aconteceu aqui em desenvolvimento. site.time muda
+     a cada build, entao a URL so muda quando ha build novo. -->
+<link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+<link rel="stylesheet" href="{{ '/assets/ascii-fx.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+<link rel="stylesheet" href="{{ '/assets/eggs.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+<link rel="stylesheet" href="{{ '/assets/threshold.css' | relative_url }}?v={{ site.time | date: '%s' }}">
 <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | relative_url }}">
 
 <script>
@@ -31,7 +37,7 @@
   <pre class="fx-camada" data-fx="sorteio" aria-hidden="true"></pre>
   <div class="topo-interno">
     <a class="marca" href="{{ '/' | relative_url }}" data-fx-scramble>findings/devblog</a>
-    <span class="topo-tag">Detection first. The sentence only says what the model can measure.</span>
+    <span class="topo-tag">Training AI vision models in public, one measured result at a time.</span>
     <button class="tema-btn" id="tema-btn" type="button"
             aria-label="Alternar tema claro e escuro">tema · t</button>
   </div>
@@ -91,7 +97,9 @@
   })();
 </script>
 
-<script src="{{ '/assets/ascii-fx.js' | relative_url }}"></script>
+<script src="{{ '/assets/ascii-fx.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+<script src="{{ '/assets/threshold.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+<script src="{{ '/assets/eggs.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 
 </body>
 </html>

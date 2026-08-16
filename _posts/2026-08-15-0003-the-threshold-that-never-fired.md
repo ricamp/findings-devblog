@@ -81,6 +81,15 @@ The maximum calibrated probability across all 3,533 validation cases is
 **0.6764**. Above 0.50 there are 153 cases, 4.3% of the split, and the top decile
 averages 0.4939. The upper threshold sat above the model's entire output range.
 
+<div class="thr-vivo" data-inicio="0.70" data-fonte="validation split · n = 3,533 · 378 positives · Damoiseau v1">
+<script type="application/json">
+{ "n": 3533, "positivos": 378, "max": 0.6764,
+  "ancoras": [[0, 3533, 378], [0.0382, 1696, 341], [0.40, 304, 159], [0.466, 200, 108],
+              [0.543, 104, 63], [0.594, 52, 33], [0.630, 30, 22], [0.649, 21, 17],
+              [0.658, 14, 12], [0.6764, 1, 1], [0.6765, 0, 0]] }
+</script>
+</div>
+
 So the system had two working states — "negative" and "I don't know" — and a
 third that was unreachable. It would not have crashed, thrown, or logged
 anything. It would have quietly never produced an affirmative sentence, and the
