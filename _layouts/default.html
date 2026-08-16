@@ -37,9 +37,16 @@
   <pre class="fx-camada" data-fx="sorteio" aria-hidden="true"></pre>
   <div class="topo-interno">
     <a class="marca" href="{{ '/' | relative_url }}" data-fx-scramble>findings/devblog</a>
-    <span class="topo-tag">Training AI vision models in public, one measured result at a time.</span>
+    <!-- A legenda vem do _config. Ela ja esteve escrita aqui e la ao mesmo tempo:
+         batiam por acaso, e a primeira edicao em um dos dois lados as separaria
+         sem aviso — o topo diria uma coisa e a home outra. -->
+    <span class="topo-tag">{{ site.tagline }}</span>
+    <!-- O site inteiro e' em ingles (lang=en). O rotulo e o aria-label estavam em
+         portugues: quem usa leitor de tela ouvia uma frase em outra lingua no meio
+         da leitura. Nomes de classe e comentarios continuam em portugues — esses
+         nao chegam ao leitor. -->
     <button class="tema-btn" id="tema-btn" type="button"
-            aria-label="Alternar tema claro e escuro">tema · t</button>
+            aria-label="Toggle light and dark theme">theme · t</button>
   </div>
 </header>
 
@@ -53,6 +60,7 @@
     Not a medical device. Not cleared by any regulator.
   </p>
   <p>
+    <a href="{{ '/models/' | relative_url }}">Models</a> ·
     <a href="{{ '/feed.xml' | relative_url }}">Atom feed</a>
   </p>
 </footer>
