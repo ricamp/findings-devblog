@@ -5,10 +5,11 @@ layout: default
 <p class="lede">{{ site.tagline }}</p>
 
 <p class="sub-lede">
-  <b>Findings</b> is a computer vision project for medical imaging: it detects a
-  radiographic finding and turns it into a sentence of report text. This devblog
-  is the public record of how that gets built — including the runs that came out
-  wrong.
+  <b>Findings</b> is a computer vision project for medical imaging: each model
+  detects one finding and turns it into a sentence of report text. Two are in
+  training right now — <a href="{{ '/models/' | relative_url }}">see what they
+  are</a>. This devblog is the public record of how that gets built — including
+  the runs that came out wrong.
 </p>
 
 <p class="rotulo" style="margin-top:44px">Entries · newest first</p>
@@ -19,6 +20,7 @@ layout: default
     <p class="entrada-meta">
       <span>{{ post.numero }}</span>
       <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+      {% if post.model %}<span>{{ post.model }}</span>{% endif %}
       {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
     </p>
     <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>

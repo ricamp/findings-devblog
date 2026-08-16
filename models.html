@@ -1,0 +1,96 @@
+---
+layout: default
+title: "Models"
+permalink: /models/
+---
+
+<p class="lede">What Findings is, and what is training inside it.</p>
+
+<p class="sub-lede">
+  <b>Findings</b> is a computer vision project for medical imaging. Each model
+  takes an image, detects one radiographic finding, and turns that finding into
+  a sentence of report text — the same sentence a radiologist would have to
+  write anyway. The project is the thing being built; the models are how it
+  gets built, and there is more than one.
+</p>
+
+<div class="prosa">
+
+  <h2>Damoiseau</h2>
+
+  <p class="cabeca-meta">
+    <span><b>Modality</b> Chest radiograph</span>
+    <span><b>Finding</b> Pleural effusion</span>
+    <span><b>Status</b> v1 trained, calibrated</span>
+  </p>
+
+  <p>
+    The first model, and the one this devblog has documented from the starting
+    line. It scores a frontal chest radiograph for pleural effusion and hands
+    that score to a report generator. v1 reached an AUROC of 0.879 on held-out
+    test data using 22% of the dataset on a free GPU — a number that looked fine
+    and hid a calibration failure underneath it, which is the subject of the
+    entries below.
+  </p>
+
+  <p>
+    The name is for Louis-Hippolyte-Joseph Damoiseau, whose curve describes the
+    upper border of a pleural effusion on a chest film.
+  </p>
+
+  <h2>The second model</h2>
+
+  <p class="cabeca-meta">
+    <span><b>Modality</b> MRI</span>
+    <span><b>Finding</b> Not yet published</span>
+    <span><b>Status</b> In training</span>
+  </p>
+
+  <p>
+    A second model is being trained in parallel, on magnetic resonance imaging
+    rather than radiographs. It is a different modality, a different finding,
+    and a different set of problems — MRI arrives as a volume with multiple
+    sequences, not as one projection, and almost nothing learned from the chest
+    X-ray pipeline transfers to it unchanged.
+  </p>
+
+  <p>
+    It has a working name internally and it is deliberately not printed here.
+    Naming a model in public is a small promise that the thing exists in the
+    shape the name implies, and this one has not yet produced a result worth
+    standing behind. It gets an entry, and a name, when it does.
+  </p>
+
+</div>
+
+<p class="rotulo" style="margin-top:52px">Entries by model</p>
+
+{% assign chaves = site.posts | map: "model_key" | uniq %}
+{% for chave in chaves %}
+  {% assign doModelo = site.posts | where: "model_key", chave %}
+  {% assign primeiro = doModelo | first %}
+  <p class="rotulo" style="margin-top:28px; color:var(--tinta-2)">{{ primeiro.model_key | capitalize }} · {{ doModelo | size }} entries</p>
+  <ul class="entradas" style="margin-top:12px">
+    {% for post in doModelo %}
+    <li class="entrada">
+      <p class="entrada-meta">
+        <span>{{ post.numero }}</span>
+        <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+        <span>{{ post.model }}</span>
+        {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
+      </p>
+      <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      {% if post.resumo %}<p class="entrada-resumo">{{ post.resumo }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+{% endfor %}
+
+<p class="aviso">
+  <b>Not a medical device.</b> Findings is a research and portfolio project. No
+  model here is cleared by ANVISA, the FDA, or any regulator, and nothing any of
+  them produces should be used to make a decision about a patient. Every output
+  carries a mandatory human-review flag by design — a radiologist reads it, and
+  the radiologist signs it. All data comes from public research datasets. No
+  patient data from clinical practice enters this project.
+</p>

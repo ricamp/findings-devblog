@@ -6,6 +6,7 @@ numero: "0003"
 resumo: "Calibration is in, fitted against real predictions for the first time. Platt won on out-of-fold Brier. Then I looked at what the calibrated distribution did to the report thresholds the project had been carrying, and found something worse than imprecision: the positive zone…"
 tag: "bugfix"
 model: "Damoiseau v1"
+model_key: "damoiseau"
 commit: "63d7925"
 ---
 

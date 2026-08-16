@@ -6,6 +6,7 @@ numero: "0002"
 resumo: "Damoiseau v1 scored an AUROC of 0.879 on held-out test data for pleural effusion — inside the published range, using 22% of the dataset, on a free Kaggle GPU. That is the good news and it is the least interesting thing in this entry. The model ranks radiographs well and…"
 tag: "model update"
 model: "Damoiseau v1"
+model_key: "damoiseau"
 commit: "8b83b17"
 ---
 

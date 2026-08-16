@@ -6,6 +6,7 @@ numero: "0001"
 resumo: "I'm a doctor building a computer vision model that reads chest radiographs and turns what it sees into a sentence of report text. The first model has a name — Damoiseau — a first target finding, pleural effusion, and a first number on the board. This entry is the starting…"
 tag: "new model"
 model: "Damoiseau"
+model_key: "damoiseau"
 commit: "af88f02"
 ---
 
