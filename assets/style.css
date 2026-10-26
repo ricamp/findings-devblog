@@ -206,6 +206,42 @@ a:hover{ text-decoration-thickness: 2px; }
    ENTRADA
    ============================================================ */
 .cabeca{ margin-bottom: 40px; }
+
+/* Capa ASCII do nome do modelo, so' em entrada `new model`.
+   Vem do campo `arte_ascii` do front matter, gerado por
+   scripts/publicar_devblog.py a partir de devblog/assets/ascii/<modelo>.txt.
+
+   A arte de cada modelo usa uma fonte ASCII diferente; a familia visual vem
+   desta moldura — posicao, cor, altura de linha e espaco abaixo iguais para
+   todos —, nao da letra. Teto de 48 colunas: e' a maior largura que ainda
+   cabe num visor de 360px sem rolagem lateral.
+
+   `white-space: pre` sem quebra: arte ASCII reflowada nao e' arte degradada,
+   e' ilegivel. Se um dia passar de 48 colunas, o overflow-x salva a pagina
+   em vez de estourar o corpo do texto. */
+.arte-modelo{
+  font-family: var(--mono);
+  /* Nada de escalar a capa para encher a largura: ampliar deixa o header
+     grande e esticar deforma a letra. Em vez disso, UMA altura de caractere
+     para os tres modelos — e' o que faz capas de fontes diferentes parecerem
+     do mesmo projeto. As larguras ficam diferentes de proposito: DAMOISEAU tem
+     nove letras e ERNST tem cinco, e marca comprida e' mais larga.
+
+     O teto de 15px foi escolhido olhando as tres no lugar; o piso de 8px e o
+     termo em vw existem porque 47 colunas a 15px dao ~425px e nao cabem num
+     visor de 360px. O clamp escala as tres juntas, entao elas continuam do
+     mesmo tamanho em qualquer largura de tela. */
+  font-size: clamp(8px, 2.4vw, 15px);
+  line-height: 1.18;
+  color: var(--tinta-3);
+  margin: 0 0 26px;
+  white-space: pre;
+  /* `overflow-x: auto` sozinho cria caixa de rolagem nos dois eixos e alguns
+     motores desenham uma barra vertical permanente ao lado da arte. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
 .cabeca h1{
   font-size: 34px;
   line-height: 1.22;

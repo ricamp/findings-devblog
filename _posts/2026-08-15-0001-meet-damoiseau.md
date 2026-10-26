@@ -6,8 +6,9 @@ numero: "0001"
 resumo: "I'm a doctor building a computer vision model that reads chest radiographs and turns what it sees into a sentence of report text. The first model has a name — Damoiseau — a first target finding, pleural effusion, and a first number on the board. This entry is the starting…"
 tag: "new model"
 model: "Damoiseau"
-model_key: "damoiseau"
 commit: "af88f02"
+model_key: "damoiseau"
+arte_ascii: " ___   __   __  __  __  __  ___  ___   __  _  _\n(   \\ (  ) (  \\/  )/  \\(  )/ __)(  _) (  )( )( )\n ) ) )/__\\  )    (( () ))( \\__ \\ ) _) /__\\ )()(\n(___/(_)(_)(_/\\/\\_)\\__/(__)(___/(___)(_)(_)\\__/"
 ---
 
 ## The short version

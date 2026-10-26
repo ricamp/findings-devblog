@@ -4,6 +4,9 @@ layout: default
 <article>
 
   <header class="cabeca">
+    {% if page.arte_ascii %}
+    <pre class="arte-modelo" aria-hidden="true">{{ page.arte_ascii | escape }}</pre>
+    {% endif %}
     <p class="rotulo">Entry {{ page.numero }}{% if page.tag %} · {{ page.tag }}{% endif %}</p>
     <h1>{{ page.title }}</h1>
     <p class="cabeca-meta">
