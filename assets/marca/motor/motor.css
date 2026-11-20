@@ -1,0 +1,38 @@
+/* ============================================================
+   Findings — motor ASCII: regra do <pre class="fx"> e tons.
+   Depende de tokens/cores.css (variáveis de cor e @font-face).
+   O <pre> não guarda cor: cada tom é uma classe sobre a variável
+   do tema, então trocar data-tema troca as cores sem redesenhar.
+   Chapa (t-chapa, t-chapa-achado): fundo tinta/achado e caractere
+   em papel. No <pre> o fundo do <span> cobre a caixa da fonte
+   (ascendente + descendente, 1,32 em), maior que o line-height
+   de 1,2: as chapas de linhas vizinhas se sobrepõem, sem fresta.
+   ============================================================ */
+
+pre.fx{
+  margin: 0;
+  padding: 0;
+  font-family: var(--mono, "JetBrains Mono", monospace);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: pre;
+  overflow: hidden;
+  color: var(--tinta);
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  /* JetBrains Mono tem ligaduras ("0x", "->"…): a grade precisa de um glifo por célula */
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  font-kerning: none;
+  tab-size: 1;
+}
+
+.t-tinta  { color: var(--tinta); }
+.t-tinta-2{ color: var(--tinta-2); }
+.t-tinta-3{ color: var(--tinta-3); }
+.t-achado { color: var(--achado); }
+.t-chapa,
+.t-chapa-achado{ color: var(--papel); }
+.t-chapa        { background: var(--tinta); }
+.t-chapa-achado { background: var(--achado); }

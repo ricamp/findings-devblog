@@ -1,0 +1,136 @@
+{%- comment -%}
+  Motor ASCII do findings-marca (copia em assets/marca/, feita por
+  `node gerar.mjs --site <pasta>` no kit; nao editar a copia).
+
+  Uso: uma vez por pagina, no fim do <body> (o default.html ja faz):
+    {% include marca-motor.html %}
+  e, no <head>, o CSS do motor:
+    <link rel="stylesheet" href="{{ '/assets/marca/motor/motor.css' | relative_url }}?v=...">
+
+  Monta todo <pre data-marca-efeito="..."> da pagina. Atributos:
+    data-marca-efeito             nome do efeito (obrigatorio): capa, cabecalho, fluxo...
+    data-marca-predefinicao       predefinicao do efeito (opcional)
+    data-marca-semente            numero ou texto; sem ele, o endereco da pagina
+                                  (a mesma entrada sempre tem a mesma cara). Na capa,
+                                  0 vira a semente do modelo.
+    data-marca-colunas            colunas fixas; sem ele, as que couberem na caixa
+    data-marca-linhas             linhas fixas; sem ele, as que couberem na caixa
+    data-marca-colunas-estreita   colunas em tela de ate 640 px (opcional)
+    data-marca-linhas-estreita    linhas em tela de ate 640 px (opcional)
+    data-marca-params             JSON com parametros do efeito (opcional)
+    data-marca-dados              JSON que vai em entrada.dados (opcional; a capa le
+                                  modelo, numero, data, versao, commit)
+    data-marca-reativo            presente = reage a ponteiro e rolagem
+
+  Comportamento: so monta quando o elemento chega perto da tela (e o pintor
+  para sozinho fora dela e com a aba escondida); com movimento reduzido desenha
+  um quadro parado; segue data-tema no <html> (redesenha no mesmo quadro); sem
+  nenhum elemento na pagina, nao baixa nada. Erros vao para o console com o
+  nome do efeito; um efeito que falha nao derruba os outros.
+
+  Carimbo de build (?v=site.time) em TODO modulo do motor, pelo mapa de imports
+  abaixo: cada arquivo .mjs de assets/marca/ e' mapeado para a mesma URL com o
+  carimbo. O mapa vale tambem para os imports relativos de dentro do motor (o
+  navegador resolve './nucleo.mjs' para a URL inteira e consulta o mapa), entao
+  todo mundo chega ao mesmo nucleo.mjs?v=... e o registro de efeitos e' um so.
+  Sem o mapa, o navegador de quem ja visitou o site guardava os efeitos velhos
+  mesmo com os modulos de entrada carimbados. Navegador sem mapa de imports cai
+  nas URLs sem carimbo (funciona, so sem a quebra de cache). O mapa precisa vir
+  antes de qualquer <script type="module"> da pagina; este include e' o primeiro.
+  O modelos.json e o grade.json sao lidos por fetch() dentro do motor e nao levam
+  carimbo (o motor monta a URL deles; nao se edita a copia).
+{%- endcomment -%}
+{%- assign mm_prefixo = '/assets/marca/' -%}
+{%- assign mm_carimbo = site.time | date: '%s' -%}
+<script type="importmap">
+{ "imports": {
+{%- assign mm_primeiro = true -%}
+{%- for f in site.static_files -%}
+  {%- if f.extname == '.mjs' -%}
+    {%- assign mm_ini = f.path | slice: 0, mm_prefixo.size -%}
+    {%- if mm_ini == mm_prefixo -%}
+      {%- assign mm_url = f.path | relative_url -%}
+      {%- unless mm_primeiro %},{% endunless %}
+    {{ mm_url | jsonify }}: {{ mm_url | append: '?v=' | append: mm_carimbo | jsonify }}
+      {%- assign mm_primeiro = false -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}
+} }
+</script>
+<script type="module">
+  const alvos = [...document.querySelectorAll('pre[data-marca-efeito]')];
+  if (alvos.length) {
+    const base = {{ '/assets/marca/' | relative_url | jsonify }};
+    const carimbo = '?v={{ site.time | date: "%s" }}';
+    const pagina = location.pathname.slice({{ site.baseurl | size }}) || '/';
+    const raiz = document.documentElement;
+    const estreito = matchMedia('(max-width: 640px)');
+
+    try {
+      const [{ montar }, , { chaves }] = await Promise.all([
+        import(base + 'motor/pintor-pre.mjs' + carimbo),
+        import(base + 'efeitos/indice.mjs' + carimbo),
+        import(base + 'motor/modelos.mjs'),
+      ]);
+      const modelos = new Set(chaves());
+      const json = (t, nome) => {
+        if (!t) return {};
+        try { return JSON.parse(t); } catch (e) { throw new Error(`${nome} não é JSON: ${t}`); }
+      };
+      const inteiro = (v) => (Number.parseInt(v, 10) > 0 ? Number.parseInt(v, 10) : undefined);
+
+      function opcoes(pre) {
+        const d = pre.dataset;
+        const usarEstreita = estreito.matches && d.marcaColunasEstreita !== undefined;
+        return {
+          semente: d.marcaSemente ?? pagina,
+          predefinicao: d.marcaPredefinicao || undefined,
+          params: json(d.marcaParams, 'data-marca-params'),
+          dados: json(d.marcaDados, 'data-marca-dados'),
+          reativo: d.marcaReativo !== undefined && d.marcaReativo !== 'false',
+          cols: inteiro(usarEstreita ? d.marcaColunasEstreita : d.marcaColunas),
+          linhas: inteiro(usarEstreita ? (d.marcaLinhasEstreita ?? d.marcaLinhas) : d.marcaLinhas),
+        };
+      }
+
+      const montados = new Map(); // pre -> instância do pintor
+      function montarPre(pre, quadroInicial = 0) {
+        const nome = pre.dataset.marcaEfeito;
+        try {
+          const o = opcoes(pre);
+          const chave = o.dados.modelo ?? o.params.modelo;
+          if (nome === 'capa' && !modelos.has(chave)) throw new Error(`modelo sem capa: ${chave}`);
+          montados.get(pre)?.destruir();
+          montados.set(pre, montar(pre, nome, { ...o, quadroInicial }));
+        } catch (e) {
+          console.error(`marca: ${nome} não montou: ${e.message}`);
+        }
+      }
+      // remonta no quadro em que estava (troca de tema, troca de largura)
+      const remontar = (filtro = () => true) => {
+        for (const [pre, inst] of montados) if (filtro(pre)) montarPre(pre, Math.max(0, inst.quadro));
+      };
+
+      const io = new IntersectionObserver((entradas) => {
+        for (const e of entradas) {
+          if (!e.isIntersecting) continue;
+          io.unobserve(e.target);
+          montarPre(e.target);
+        }
+      }, { rootMargin: '300px 0px' });
+      for (const pre of alvos) io.observe(pre);
+
+      new MutationObserver(() => remontar()).observe(raiz, { attributes: true, attributeFilter: ['data-tema'] });
+      estreito.addEventListener('change', () => remontar((pre) => pre.dataset.marcaColunasEstreita !== undefined));
+
+      // leitura para conferência (Chrome invisível): o que está montado e em que quadro
+      window.__marca = () => [...montados].map(([pre, inst]) => ({
+        efeito: pre.dataset.marcaEfeito, quadro: inst.quadro, agendado: inst.agendado,
+        cols: inst.grade?.cols ?? null, linhas: inst.grade?.linhas ?? null,
+      }));
+    } catch (e) {
+      console.error(`marca: o motor não carregou: ${e.message}`);
+    }
+  }
+</script>

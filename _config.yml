@@ -29,8 +29,19 @@ feed:
 sass:
   style: compressed
 
+# O Jekyll deixa de fora todo arquivo que comeca com "_"; o motor do
+# findings-marca tem um (efeitos/_comum.mjs) e sem ele nenhum efeito carrega.
+include:
+  - assets/marca/efeitos/_comum.mjs
+
+# Versao C: o Liquid le modelos.json direto da copia do motor (site.data.modelos),
+# para a margem animada usar a assinatura de cada modelo sem duplicar a tabela.
+# So .json/.yml/.csv dessa pasta viram dados; o resto continua sendo arquivo estatico.
+data_dir: assets/marca
+
 exclude:
   - README.md
+  - REVISAR.md
   - Gemfile
   - Gemfile.lock
   - vendor

@@ -4,8 +4,29 @@
    Regra semantica: serifa = voz humana · mono = voz da maquina
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=JetBrains+Mono:ital,wght@0,300..700;1,300..700&display=swap");
+/* Fontes locais, copiadas de findings-marca/fontes/ (licenca OFL ao lado).
+   Antes vinham do Google Fonts por @import: o site dependia de um servidor de
+   fora para ter a propria letra. As URLs sao relativas a este arquivo, entao
+   valem com qualquer baseurl. A Source Serif 4 local so tem o romano (com o
+   eixo opsz); o italico sai sintetizado pelo navegador. */
+@font-face{
+  font-family: "JetBrains Mono";
+  src: url("fontes/JetBrainsMono[wght].ttf") format("truetype");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face{
+  font-family: "Source Serif 4";
+  src: url("fontes/SourceSerif4Variable-Roman.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
 
+/* Cores: os valores sao os de findings-marca/tokens/cores.css (que por sua vez
+   vieram daqui, v1.3). Os nomes ficam os de sempre; quem muda uma cor muda no
+   kit e copia para ca. --raio, --raio-lg e --medida sao so do site. */
 :root{
   --papel:       #FAF9F5;
   --pergaminho:  #F0EEE6;
@@ -32,6 +53,13 @@
   --raio-lg: 10px;
 
   --medida: 68ch;   /* largura de leitura */
+
+  /* Versao C · Editorial: grade de revista */
+  --largo: 1520px;                          /* largura maxima do conteudo */
+  --calha: clamp(20px, 4.5vw, 64px);        /* margem lateral da pagina */
+  --vao: clamp(20px, 2.4vw, 40px);          /* vao entre colunas */
+  --topo-h: 64px;
+  --topo-respiro: clamp(40px, 6vw, 88px);   /* espaco entre o topo e o conteudo */
 }
 
 [data-tema="escuro"]{
@@ -74,10 +102,13 @@ code, pre, .mono{ font-family: var(--mono); }
 a{ color: var(--achado); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 a:hover{ text-decoration-thickness: 2px; }
 
+/* Versao C: o envelope ocupa a largura (ate --largo); cada pagina monta a
+   propria grade de 12 colunas por dentro (.grade). A medida de leitura
+   (--medida) continua valendo para a prosa, que fica deslocada a esquerda. */
 .envelope{
-  max-width: var(--medida);
+  max-width: var(--largo);
   margin: 0 auto;
-  padding: 0 24px 80px;
+  padding: 0 var(--calha) 120px;
 }
 
 /* ---- rotulo mono (kicker) ---- */
@@ -92,31 +123,45 @@ a:hover{ text-decoration-thickness: 2px; }
 /* ============================================================
    TOPO
    ============================================================ */
+/* Versao C: topo minimo, papel liso, sem a camada ascii-fx atras (o movimento
+   mora na margem das entradas). Mesma largura da grade do conteudo. */
 .topo{
   border-bottom: 1px solid var(--linha);
-  background: var(--pergaminho);
-  margin-bottom: 48px;
+  background: var(--papel);
+  margin-bottom: var(--topo-respiro);
 }
-/* Mais largo que --medida de proposito: a tagline nao cabe na largura de
-   leitura, e com flex-wrap ela quebrava o topo em tres linhas. */
 .topo-interno{
-  max-width: 92ch;
+  max-width: var(--largo);
   margin: 0 auto;
-  padding: 26px 24px;
+  padding: 0 var(--calha);
+  height: var(--topo-h);
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16px;
   flex-wrap: nowrap;
 }
+/* Logo do kit (findings-marca, guia secao 02): texto em JetBrains Mono 500,
+   `findings` em tinta, a barra em terracota, o lugar em tinta-2. A barra e' a
+   unica cor quente da marca; o logo nao muda de cor no hover (o scramble ja e'
+   a resposta ao ponteiro).
+
+   O scramble de ascii-fx.js troca o conteudo do link por um <span> por
+   caractere (16, de `findings/devblog`) e perde os tres spans daqui; por isso
+   as mesmas cores vao tambem por posicao: o 9o e' a barra, do 10o em diante e'
+   o lugar. O scramble so pinta cor inline nos glifos embaralhados, e a barra
+   nunca embaralha. */
 .marca{
   font-family: var(--mono);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: .02em;
   color: var(--tinta);
   text-decoration: none;
 }
-.marca:hover{ color: var(--achado); }
+.marca-barra,
+.marca[data-fx-scramble-ativo] > span:nth-child(9){ color: var(--achado); }
+.marca-lugar,
+.marca[data-fx-scramble-ativo] > span:nth-child(n+10){ color: var(--tinta-2); }
 .topo-tag{
   font-family: var(--mono);
   font-size: 12px;
@@ -136,21 +181,20 @@ a:hover{ text-decoration-thickness: 2px; }
   .topo-tag{ display: none; }
 }
 .tema-btn{
-  margin-left: auto;
   flex: none;
   font-family: var(--mono);
   font-size: 12px;
   /* pergaminho, nao transparent: a camada ascii-fx fica atras do topo e
      atravessaria a caixa do botao. E' a cor da propria faixa, entao nada muda
      visualmente — so para de vazar. */
-  background: var(--pergaminho);
+  background: var(--papel);
   color: var(--tinta-2);
   border: 1px solid var(--linha-forte);
   border-radius: 7px;
   padding: 5px 12px;
   cursor: pointer;
 }
-.tema-btn:hover{ background: var(--papel); color: var(--tinta); }
+.tema-btn:hover{ background: var(--pergaminho); color: var(--tinta); }
 
 /* ============================================================
    INDICE
@@ -242,6 +286,43 @@ a:hover{ text-decoration-thickness: 2px; }
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 }
+/* ---- quadro do motor (findings-marca) e capa viva ----
+   O <pre data-marca-efeito> tem colunas fixas; a letra sai da largura da caixa
+   (cols x 0,6 em = largura, com meia celula de folga contra arredondamento), entao
+   a capa escala como um bloco e nunca rola de lado. A altura fica reservada pelas
+   linhas antes do primeiro desenho. Em tela de ate 640 px valem as colunas e
+   linhas "estreitas" (a capa quebra o nome em duas linhas e a letra nao fica
+   miuda demais). As variaveis --marca-* vem no style do proprio <pre>. */
+.marca-quadro{
+  container-type: inline-size;
+  min-width: 0;
+  margin: 0 0 26px;
+}
+.marca-quadro pre[data-marca-efeito],
+.marca-quadro pre.ed-camada{
+  --cols: var(--marca-cols, 60);
+  --linhas: var(--marca-linhas, 1);
+  display: none;
+  font-size: min(var(--marca-teto, 15px), calc(100cqw / (var(--cols) * 0.6 + 0.6)));
+  line-height: 1.2;
+  height: calc(var(--linhas) * 1.2em);
+  margin: 0;
+}
+.marca-js .marca-quadro pre[data-marca-efeito],
+.marca-js .marca-quadro pre.ed-camada{ display: block; }
+@media (max-width: 640px){
+  .marca-quadro pre[data-marca-colunas-estreita]{
+    --cols: var(--marca-cols-estreita);
+    --linhas: var(--marca-linhas-estreita, var(--marca-linhas));
+  }
+}
+/* sem JS: a previa PNG do kit */
+.marca-quadro img{
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .cabeca h1{
   font-size: 34px;
   line-height: 1.22;
@@ -402,10 +483,8 @@ a:hover{ text-decoration-thickness: 2px; }
 }
 
 .rodape{
-  max-width: var(--medida);
-  margin: 0 auto;
-  padding: 28px 24px 60px;
   border-top: 1px solid var(--linha);
+  padding: 32px 0 64px;
   font-family: var(--mono);
   font-size: 12px;
   color: var(--tinta-3);
@@ -425,3 +504,665 @@ a:hover{ text-decoration-thickness: 2px; }
     transition-duration: .001ms !important;
   }
 }
+
+/* ============================================================
+   VERSAO C · EDITORIAL
+   Revista: grade assimetrica de 12 colunas, serifa grande, muito
+   respiro, o ASCII como ilustracao. Desktop >= 1100 px; entre 641 e
+   1099 a grade cai para 6; ate 640, uma coluna so.
+   ============================================================ */
+
+.grade{
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--vao);
+}
+.grade > *{ grid-column: 1 / -1; min-width: 0; }
+
+/* ---- topo: logo, Models, tema ---- */
+.topo-nav{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.topo-nav a{ color: var(--tinta-2); text-decoration: none; }
+.topo-nav a:hover{ color: var(--tinta); text-decoration: underline; }
+
+/* ---- rotulo de secao: fio em tinta, como numa revista ---- */
+.indice-rotulo{
+  border-top: 1px solid var(--tinta);
+  padding-top: 14px;
+  margin: 0 0 clamp(28px, 3vw, 44px);
+}
+
+/* ---- manchete (indice e modelos) ---- */
+.manchete{
+  align-items: end;
+  margin-bottom: clamp(48px, 7vw, 112px);
+}
+.manchete .lede{
+  grid-column: 1 / span 8;
+  font-size: clamp(34px, 4.6vw, 76px);
+  line-height: 1.04;
+  letter-spacing: -.025em;
+  font-weight: 500;
+  margin: 0;
+  text-wrap: balance;
+}
+.manchete .sub-lede{
+  grid-column: 9 / -1;
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0;
+  padding-bottom: .4em;
+  text-wrap: pretty;
+}
+
+/* ---- numero grande da entrada (voz da maquina) ---- */
+.cartao-numero{
+  font-family: var(--mono);
+  font-size: clamp(26px, 2.6vw, 40px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--tinta-3);
+  margin: 0 0 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* titulos e resumos de cartao (indice): serifa, sem sublinhado */
+.destaque .entrada-titulo,
+.sumario .entrada-titulo,
+.linhagem .entrada-titulo{
+  font-weight: 600;
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+.destaque .entrada-resumo,
+.sumario .entrada-resumo{ text-wrap: pretty; }
+
+/* a capa larga pode passar dos 15 px de letra do padrao */
+.capa-larga{ --marca-teto: 30px; }
+.destaque .marca-quadro,
+.sumario .marca-quadro,
+.linhagem .marca-quadro,
+.capa-heroi .marca-quadro{ margin: 0; }
+
+/* ---- destaque: a entrada mais recente ---- */
+.destaque{
+  margin: 0 0 clamp(72px, 9vw, 136px);
+  padding: 0;
+  border: 0;
+  row-gap: 28px;
+}
+.destaque .destaque-figura{ grid-column: 1 / span 8; align-self: start; }
+.destaque .destaque-texto{ grid-column: 9 / -1; align-self: end; }
+.destaque:not(.destaque-capa) .destaque-texto{ grid-column: 1 / span 9; }
+.destaque .entrada-titulo{
+  font-size: clamp(44px, 5.6vw, 92px);
+  line-height: .98;
+  letter-spacing: -.03em;
+  margin: 10px 0 22px;
+}
+.destaque .entrada-resumo{
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--tinta-2);
+}
+
+/* ---- sumario: grade de tamanhos desiguais ---- */
+.sumario{
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  row-gap: clamp(64px, 7vw, 112px);
+}
+.sumario > .entrada,
+.sumario > .entrada:last-child{
+  border: 0;
+  border-top: 1px solid var(--linha);
+  padding: 22px 0 0;
+}
+.sumario .entrada-resumo{ color: var(--tinta-2); }
+
+/* estreia: pagina-dupla, capa de um lado e texto do outro */
+.sumario > .cartao-estreia{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: start;
+  border-top-color: var(--tinta);
+}
+.cartao-estreia.capa-esq .cartao-capa{ grid-column: 1 / span 7; }
+.cartao-estreia.capa-esq .cartao-texto{ grid-column: 9 / -1; }
+.cartao-estreia.capa-dir .cartao-capa{ grid-column: 7 / -1; grid-row: 1; }
+.cartao-estreia.capa-dir .cartao-texto{ grid-column: 1 / span 5; grid-row: 1; }
+.cartao-estreia .entrada-titulo{
+  font-size: clamp(32px, 3.4vw, 54px);
+  line-height: 1.02;
+  margin: 10px 0 16px;
+}
+.cartao-estreia .entrada-resumo{ font-size: 17px; }
+
+/* sozinha entre duas estreias: faixa larga, titulo a esquerda e resumo a direita */
+.sumario > .cartao-faixa{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: auto auto 1fr;
+  align-items: start;
+}
+.cartao-faixa .cartao-numero{ grid-column: 1 / span 2; grid-row: 1 / span 2; }
+.cartao-faixa .cartao-texto{ display: contents; }
+.cartao-faixa .entrada-meta{ grid-column: 3 / span 6; grid-row: 1; }
+.cartao-faixa .entrada-titulo{
+  grid-column: 3 / span 6; grid-row: 2;
+  font-size: clamp(30px, 3.2vw, 50px);
+  line-height: 1.04;
+  margin: 4px 0 0;
+}
+.cartao-faixa .entrada-resumo{ grid-column: 9 / -1; grid-row: 1 / span 3; font-size: 17px; margin: 0; }
+
+/* em par: 7 + 5 (ou 5 + 7); sobrando tres: 4 + 4 + 4 */
+.sumario > .cartao-largo{ grid-column: span 7; }
+.sumario > .cartao-estreito{ grid-column: span 5; }
+.sumario > .cartao-terco{ grid-column: span 4; }
+.cartao-largo .entrada-titulo{ font-size: clamp(30px, 3vw, 46px); line-height: 1.05; margin: 4px 0 14px; }
+.cartao-largo .entrada-resumo{ font-size: 18px; max-width: 46ch; }
+.cartao-estreito .entrada-titulo{ font-size: clamp(24px, 2.2vw, 32px); line-height: 1.1; margin: 4px 0 12px; }
+.cartao-terco .entrada-titulo{ font-size: clamp(22px, 1.9vw, 28px); line-height: 1.12; margin: 4px 0 12px; }
+.cartao-estreito .entrada-resumo,
+.cartao-terco .entrada-resumo{
+  font-size: 16px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+/* avisos: na coluna de texto, nunca na largura toda */
+.grade > .aviso{ grid-column: 1 / span 7; margin-top: 72px; }
+
+/* ============================================================
+   ENTRADA (post): abertura, titulo pendurado, prosa a esquerda,
+   margem larga a direita
+   ============================================================ */
+
+/* estreia: capa + titulo ocupam a primeira tela */
+.abertura{
+  margin: calc(-1 * var(--topo-respiro)) calc(-1 * var(--calha)) 0;
+  padding: clamp(24px, 3vw, 48px) var(--calha) 0;
+  min-height: calc(100svh - var(--topo-h) - 1px);
+  display: flex;
+  flex-direction: column;
+  background: var(--pergaminho);
+  border-bottom: 1px solid var(--linha);
+  /* a faixa sangra ate as bordas da janela em tela mais larga que --largo,
+     sem criar rolagem lateral (sombra recortada, nao largura) */
+  box-shadow: 0 0 0 100vmax var(--pergaminho);
+  clip-path: inset(0 -100vmax 0 -100vmax);
+}
+.capa-heroi{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* largura que cabe na altura que sobra (112 x 27 celulas: largura = 2,07 x altura) */
+.capa-heroi .marca-capa{
+  width: min(100%, calc((100svh - var(--topo-h) - 300px) * 2.07));
+}
+.abertura .cabeca{ margin: 0; padding: 28px 0 40px; }
+
+.folha .cabeca{ margin-bottom: clamp(40px, 5vw, 72px); row-gap: 0; }
+.folha .cabeca .rotulo{ grid-column: 1 / span 10; margin: 0 0 10px; }
+.folha .cabeca h1{
+  grid-column: 1 / span 10;
+  font-size: clamp(42px, 5.8vw, 96px);
+  line-height: .98;
+  letter-spacing: -.03em;
+  font-weight: 600;
+  margin: 0;
+  text-wrap: balance;
+}
+.folha-estreia .corpo{ margin-top: clamp(48px, 6vw, 88px); }
+
+.corpo{ align-items: start; }
+.corpo .prosa{ grid-column: 2 / span 7; grid-row: 1; max-width: var(--medida); }
+.corpo .margem{ grid-column: 10 / -1; grid-row: 1; align-self: stretch; }
+.prosa > :first-child{ margin-top: 0; }
+.prosa > h2:first-child{ padding-top: 0; border-top: 0; }
+
+.margem .cabeca-meta{
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  border-top: 1px solid var(--tinta);
+}
+.margem .cabeca-meta b{ display: inline-block; min-width: 7ch; }
+
+/* o efeito da margem: assinatura do modelo, acompanha a rolagem */
+.margem-efeito{
+  display: none;
+  position: sticky;
+  top: 28px;
+  margin: 36px 0 0;
+}
+.marca-js .margem-efeito{ display: block; }
+.margem-efeito pre{
+  display: block;
+  width: 100%;
+  height: min(60vh, 560px);
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.margem-efeito figcaption{
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--tinta-3);
+  margin-top: 10px;
+}
+
+.folha > .grade > .aviso{ grid-column: 2 / span 7; }
+
+.navega{
+  margin-top: 72px;
+  padding-top: 0;
+  border-top: 0;
+  row-gap: 28px;
+}
+.navega > div{ border-top: 1px solid var(--tinta); padding-top: 14px; }
+.navega .navega-antes{ grid-column: 1 / span 6; }
+.navega .navega-depois{ grid-column: 7 / -1; text-align: right; }
+.navega .navega-antes:only-of-type,
+.navega .navega-depois:first-child{ grid-column: 1 / span 6; text-align: left; }
+.navega .rotulo{ display: block; margin-bottom: 8px; }
+.navega .navega-antes a,
+.navega .navega-depois a{
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.2vw, 34px);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--tinta);
+  text-decoration: none;
+}
+.navega .navega-antes a:hover,
+.navega .navega-depois a:hover{ color: var(--achado); text-decoration: underline; }
+.navega .navega-todas{ grid-column: 1 / -1; border-top: 0; padding-top: 0; }
+
+/* ============================================================
+   MODELOS: uma pagina-dupla por linhagem
+   ============================================================ */
+.modelos-texto{ margin: 0 0 clamp(24px, 3vw, 48px); }
+.modelos-texto .prosa{ grid-column: 2 / span 7; max-width: var(--medida); }
+
+.linhagem{
+  border-top: 1px solid var(--tinta);
+  padding-top: 22px;
+  margin-bottom: clamp(72px, 8vw, 128px);
+  align-items: start;
+}
+.linhagem.capa-esq .linhagem-capa{ grid-column: 1 / span 7; }
+.linhagem.capa-esq .linhagem-texto{ grid-column: 9 / -1; }
+.linhagem.capa-dir .linhagem-capa{ grid-column: 6 / -1; grid-row: 1; }
+.linhagem.capa-dir .linhagem-texto{ grid-column: 1 / span 4; grid-row: 1; }
+.linhagem.sem-capa .linhagem-texto{ grid-column: 1 / span 8; }
+.linhagem-nome{
+  font-size: clamp(48px, 6vw, 104px);
+  line-height: .95;
+  letter-spacing: -.035em;
+  font-weight: 600;
+  margin: 8px 0 14px;
+}
+.linhagem-descricao{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--tinta-2);
+  margin: 0 0 22px;
+}
+.linhagem-resumo{ font-size: 17px; color: var(--tinta-2); margin: 0 0 28px; text-wrap: pretty; }
+.linhagem-entradas{ list-style: none; padding: 0; margin: 0; }
+.linhagem-entradas .entrada{ padding: 14px 0; }
+.linhagem-entradas .entrada-titulo{ font-size: 20px; line-height: 1.25; margin: 0; }
+.linhagem-entradas .entrada-meta{ margin-bottom: 4px; }
+
+/* ============================================================
+   404
+   ============================================================ */
+.pagina-404{ align-items: start; row-gap: 12px; }
+.pagina-404 .quatro{ grid-column: 1 / span 7; grid-row: 2 / span 2; margin-top: 0; }
+.pagina-404 .quatro-n{ font-size: clamp(56px, 7vw, 112px); }
+.pagina-404 .quatro-texto{ grid-column: 9 / -1; grid-row: 2; margin: 0; font-size: 20px; line-height: 1.5; }
+.pagina-404 .quatro-volta{ grid-column: 9 / -1; grid-row: 3; margin: 8px 0 0; }
+
+/* ---- rodape na grade ---- */
+.rodape-interno{
+  max-width: var(--largo);
+  margin: 0 auto;
+  padding: 0 var(--calha);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.rodape-interno p{ margin: 0; }
+
+/* ============================================================
+   MEIO (641 a 1099 px): grade de 6, pagina-dupla vira capa em cima
+   ============================================================ */
+@media (max-width: 1099px){
+  .grade{ grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+  .manchete{ row-gap: 24px; }
+  .manchete .lede{ grid-column: 1 / -1; }
+  .manchete .sub-lede{ grid-column: 1 / span 5; }
+
+  .destaque .destaque-figura,
+  .destaque .destaque-texto,
+  .destaque:not(.destaque-capa) .destaque-texto{ grid-column: 1 / -1; }
+  .destaque .destaque-texto{ max-width: 46em; }
+
+  .sumario > .cartao-estreia{ row-gap: 22px; }
+  .cartao-estreia.capa-esq .cartao-capa,
+  .cartao-estreia.capa-dir .cartao-capa{ grid-column: 1 / -1; grid-row: 1; }
+  .cartao-estreia.capa-esq .cartao-texto,
+  .cartao-estreia.capa-dir .cartao-texto{ grid-column: 1 / span 5; grid-row: 2; }
+
+  .cartao-faixa .cartao-numero{ grid-column: 1 / -1; grid-row: auto; }
+  .cartao-faixa .entrada-meta,
+  .cartao-faixa .entrada-titulo,
+  .cartao-faixa .entrada-resumo{ grid-column: 1 / span 5; grid-row: auto; }
+  .cartao-faixa .entrada-titulo{ margin-bottom: 14px; }
+
+  .sumario > .cartao-largo,
+  .sumario > .cartao-estreito,
+  .sumario > .cartao-terco{ grid-column: span 3; }
+
+  .grade > .aviso,
+  .folha > .grade > .aviso{ grid-column: 1 / span 5; }
+
+  .folha .cabeca .rotulo,
+  .folha .cabeca h1{ grid-column: 1 / -1; }
+  .capa-heroi .marca-capa{ width: 100%; }
+  .abertura{ min-height: 0; }
+
+  /* a margem vira uma faixa curta entre o titulo e o texto */
+  .corpo{ display: block; }
+  .corpo .prosa{ max-width: var(--medida); }
+  .margem{ margin-bottom: 44px; }
+  .margem .cabeca-meta{ flex-direction: row; gap: 8px 22px; }
+  .margem .cabeca-meta b{ min-width: 0; }
+  .margem-efeito{ position: static; margin-top: 18px; }
+  .margem-efeito pre{ height: 7.2em; }
+  .margem-efeito figcaption{ margin-top: 6px; }
+
+  .navega .navega-antes,
+  .navega .navega-depois{ grid-column: 1 / -1; text-align: left; }
+
+  .modelos-texto .prosa{ grid-column: 1 / -1; }
+  .linhagem{ row-gap: 24px; }
+  .linhagem.capa-esq .linhagem-capa,
+  .linhagem.capa-dir .linhagem-capa{ grid-column: 1 / -1; grid-row: 1; }
+  .linhagem.capa-esq .linhagem-texto,
+  .linhagem.capa-dir .linhagem-texto,
+  .linhagem.sem-capa .linhagem-texto{ grid-column: 1 / span 5; grid-row: 2; }
+
+  .pagina-404 .quatro,
+  .pagina-404 .quatro-texto,
+  .pagina-404 .quatro-volta{ grid-column: 1 / -1; grid-row: auto; }
+  .pagina-404 .quatro-texto{ margin-top: 20px; }
+}
+
+/* ============================================================
+   ESTREITO (ate 640 px): uma coluna
+   ============================================================ */
+@media (max-width: 640px){
+  .grade{ grid-template-columns: minmax(0, 1fr); }
+  .grade > *,
+  .sumario > .cartao-largo,
+  .sumario > .cartao-estreito,
+  .sumario > .cartao-terco,
+  .cartao-estreia.capa-esq .cartao-texto,
+  .cartao-estreia.capa-dir .cartao-texto,
+  .cartao-faixa .entrada-meta,
+  .cartao-faixa .entrada-titulo,
+  .cartao-faixa .entrada-resumo,
+  .manchete .sub-lede,
+  .grade > .aviso,
+  .folha > .grade > .aviso,
+  .linhagem.capa-esq .linhagem-texto,
+  .linhagem.capa-dir .linhagem-texto,
+  .linhagem.sem-capa .linhagem-texto{ grid-column: 1 / -1; }
+
+  .topo-nav{ gap: 14px; }
+  .manchete .lede{ font-size: 34px; }
+  .destaque .entrada-titulo{ font-size: 44px; }
+  .folha .cabeca h1{ font-size: 40px; line-height: 1.02; }
+  .cartao-estreia .entrada-titulo,
+  .cartao-faixa .entrada-titulo,
+  .cartao-largo .entrada-titulo{ font-size: 30px; }
+  .cartao-estreito .entrada-titulo,
+  .cartao-terco .entrada-titulo{ font-size: 26px; }
+  .cartao-largo .entrada-resumo,
+  .destaque .entrada-resumo{ font-size: 17px; }
+  .sumario{ row-gap: 56px; }
+  .abertura{ padding-top: 20px; }
+  .abertura .cabeca{ padding: 22px 0 32px; }
+  .margem-efeito pre{ height: 6em; font-size: 10px; }
+  .navega > div{ grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   VERSAO C · SEGUNDA VOLTA: rolagem, profundidade, polimento
+   O JS e' assets/js/editorial.mjs. Todo estado escondido depende de
+   uma classe que so o JS poe (ed-*): sem JS, nada some. Com movimento
+   reduzido o JS nao poe nenhuma delas.
+   ============================================================ */
+
+/* ---- capa em tres planos (moldura, fundo, nome) ----
+   O <pre> do include (role=img) desenha a moldura e os textos e fica no fluxo; o
+   editorial.mjs poe dois irmaos por cima, cada um com uma camada do motor (fundo e nome),
+   do mesmo tamanho (mesmas variaveis e colunas). Eles se deslocam em px. */
+.marca-capa{ position: relative; }
+.marca-quadro pre.ed-camada{
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  pointer-events: none;
+  will-change: transform;
+}
+/* a capa e' um link para a entrada (no indice e em /models/); o titulo continua sendo o
+   link que o leitor de tela e o teclado encontram */
+.capa-link{ display: block; color: inherit; text-decoration: none; cursor: pointer; }
+
+/* ---- titulos que entram por mascara, linha a linha ---- */
+.ed-linha{ display: block; white-space: nowrap; }
+.ed-titulo-armado .ed-linha{
+  clip-path: inset(100% -0.3em -0.35em -0.3em);
+  transform: translateY(.32em);
+}
+.ed-titulo-tocando .ed-linha{
+  animation: ed-linha .64s cubic-bezier(.2, .7, .15, 1) both;
+  animation-delay: calc(var(--i, 0) * 85ms);
+}
+@keyframes ed-linha{
+  from{ clip-path: inset(100% -0.3em -0.35em -0.3em); transform: translateY(.32em); }
+  to  { clip-path: inset(-0.3em -0.3em -0.35em -0.3em); transform: none; }
+}
+
+/* ---- filetes que se tracam (em passos, como uma linha de caracteres) ---- */
+.indice-rotulo, .sumario > .cartao-estreia, .linhagem, .navega > div{ --ed-cor: var(--tinta); }
+.sumario > .entrada, .prosa h2{ --ed-cor: var(--linha); }
+.sumario > .cartao-estreia{ --ed-cor: var(--tinta); }
+.ed-filete{ position: relative; border-top-color: transparent !important; }
+.ed-filete::before{
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 1px;
+  background: var(--ed-cor, var(--linha));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.ed-filete-tocando::before{
+  transform: scaleX(1);
+  transition: transform .78s steps(36, end);
+}
+
+/* ---- numero grande: largura fixa enquanto os digitos giram ---- */
+.cartao-numero, .cabeca-numero{ font-variant-numeric: tabular-nums; }
+
+/* ---- margem da entrada: o efeito na frente, um plano de pontos atras ---- */
+.ed-margem pre{ position: relative; z-index: 1; }
+.ed-plano{
+  position: absolute;
+  left: -10px; right: -10px; top: -10px;
+  height: calc(min(60vh, 560px) + 20px);
+  background-image: radial-gradient(circle at 1px 1px,
+    color-mix(in srgb, var(--tinta-3) 30%, transparent) .75px, transparent 1.1px);
+  background-size: 13.2px 13.2px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 55%, transparent 78%);
+          mask-image: radial-gradient(ellipse at 50% 50%, #000 55%, transparent 78%);
+  pointer-events: none;
+}
+
+/* ---- barra de leitura, de caracteres, presa no alto ---- */
+.ed-leitura{
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  z-index: 20;
+  background: var(--papel);
+  border-bottom: 1px solid var(--linha);
+  transform: translateY(-101%);
+  transition: transform .22s ease;
+  pointer-events: none;
+}
+.ed-leitura-visivel{ transform: none; }
+.ed-leitura-interno{
+  max-width: var(--largo);
+  margin: 0 auto;
+  padding: 0 var(--calha);
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1;
+  color: var(--tinta-3);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ed-l-trilha{ flex: 1; min-width: 0; overflow: hidden; }
+.ed-l-feito{ color: var(--tinta-2); }
+.ed-l-falta{ color: var(--linha-forte); }
+
+/* ---- entrada sem estreia: abertura de texto, com o numero grande ---- */
+.abertura-texto{
+  min-height: 0;
+  padding-top: clamp(40px, 5vw, 80px);
+}
+.folha .abertura-texto .cabeca{ margin: 0; padding: 0 0 clamp(36px, 4vw, 56px); align-items: end; }
+.abertura-texto + .corpo{ margin-top: clamp(48px, 6vw, 88px); }
+.abertura-texto .cabeca .rotulo,
+.abertura-texto .cabeca h1{ grid-column: 1 / span 9; }
+.abertura-texto .cabeca h1{ grid-row: 2; }
+.cabeca-numero{
+  grid-column: 10 / -1;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  align-self: end;
+  margin: 0;
+  font-family: var(--mono);
+  font-weight: 200;
+  font-size: clamp(88px, 11vw, 196px);
+  line-height: .78;
+  letter-spacing: -.05em;
+  color: var(--tinta-3);
+  user-select: none;
+}
+
+/* ---- faixa do sumario (0005): numero do tamanho do das duplas, fio forte ---- */
+.sumario > .cartao-faixa{ border-top-color: var(--tinta); --ed-cor: var(--tinta); }
+.cartao-faixa .cartao-numero{ font-size: clamp(40px, 4.4vw, 72px); font-weight: 200; }
+
+/* ---- aviso na grade: o rotulo numa coluna, o texto na outra ---- */
+.aviso{
+  display: grid;
+  grid-template-columns: minmax(8.5em, 2fr) 5fr;
+  column-gap: var(--vao);
+  border: 0;
+  border-top: 2px solid var(--revisao);
+  border-radius: 0;
+  padding: 18px 22px 20px;
+}
+.aviso b{ grid-column: 1; }
+
+/* ---- rodape: colofao na grade de 12 ---- */
+.rodape{ border-top: 1px solid var(--tinta); }
+.rodape-interno{
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--vao);
+  align-items: end;
+}
+.rodape-interno p:first-child{ grid-column: 1 / span 6; }
+.rodape-interno p:last-child{ grid-column: 10 / -1; text-align: right; }
+
+/* ---- foco e ponteiro ---- */
+:focus-visible{
+  outline: 2px solid var(--tinta);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.entrada-titulo a:focus-visible,
+.navega a:focus-visible,
+.linhagem a:focus-visible{ outline-offset: 5px; }
+.tema-btn:focus-visible{ outline-offset: 2px; border-radius: 7px; }
+.marca:hover .marca-barra{ color: var(--achado); }
+.capa-link:hover ~ * .entrada-titulo a,
+.cartao:hover .entrada-titulo a,
+.destaque:hover .entrada-titulo a{ text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .12em; }
+
+/* ---- troca de tema sem piscar (View Transitions, quando o navegador tem) ---- */
+::view-transition-old(root),
+::view-transition-new(root){ animation-duration: .32s; animation-timing-function: ease; }
+
+@media (max-width: 1099px){
+  .abertura-texto .cabeca .rotulo,
+  .abertura-texto .cabeca h1{ grid-column: 1 / span 5; }
+  .cabeca-numero{ grid-column: 6 / -1; font-size: clamp(64px, 12vw, 120px); }
+  .ed-plano{ height: calc(7.2em + 20px); }
+  .margem-efeito.ed-margem{ position: relative; }
+  .rodape-interno{ grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .rodape-interno p:first-child{ grid-column: 1 / span 4; }
+  .rodape-interno p:last-child{ grid-column: 5 / -1; }
+  .cartao-faixa .cartao-numero{ font-size: clamp(26px, 2.6vw, 40px); font-weight: 300; }
+}
+@media (max-width: 640px){
+  .abertura-texto{ padding-top: 28px; }
+  .abertura-texto .cabeca .rotulo,
+  .abertura-texto .cabeca h1{ grid-column: 1 / -1; }
+  .abertura-texto .cabeca h1{ grid-row: 3; }
+  .cabeca-numero{ grid-column: 1 / -1; grid-row: 1; justify-self: start; font-size: 72px; margin-bottom: 18px; }
+  .ed-plano{ height: calc(6em + 20px); }
+  .aviso{ grid-template-columns: 1fr; row-gap: 6px; }
+  .rodape-interno{ grid-template-columns: 1fr; row-gap: 12px; }
+  .rodape-interno p:first-child,
+  .rodape-interno p:last-child{ grid-column: 1; text-align: left; }
+}
+
+/* o fio da faixa de abertura sangra junto com o pergaminho */
+.abertura{
+  box-shadow: 0 0 0 100vmax var(--pergaminho), 0 1px 0 100vmax var(--linha);
+  clip-path: inset(0 -100vmax -1px -100vmax);
+}
+/* /models/: o rotulo ja' tem o fio forte; a primeira linhagem nao repete */
+.indice-rotulo + .linhagem{ border-top: 0; padding-top: 0; }

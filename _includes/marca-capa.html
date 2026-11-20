@@ -1,0 +1,72 @@
+{%- comment -%}
+  Capa viva de modelo (efeito `capa` do findings-marca), em formato de ficha.
+
+  Uso (o post.html ja faz, nas entradas que tem arte_ascii, isto e, estreia):
+    {% include marca-capa.html modelo=page.model_key numero=page.numero
+       data=page.date versao=page.model commit=page.commit %}
+
+  Parametros:
+    modelo            chave em modelos.json (damoiseau, segond, ernst, greulich, abreu); obrigatorio
+    numero, data,     o que vai no alto e no rodape da ficha; vem da propria entrada.
+    versao, commit    Sem eles, a capa usa a estreia de modelos.json.
+    predefinicao      ficha (padrao, a ficha pronta) · montar (se monta em 3 s e para) · limpa (sem fundo)
+    colunas, linhas   grade larga; padrao 112 x 27 (a capa do kit)
+    colunas_estreita, linhas_estreita
+                      grade em tela de ate 640 px; padrao 62 x 29 (nome quebrado em duas linhas)
+    classe            classe a mais na <figure> (para o leiaute de cada versao)
+
+  A letra sai da largura da caixa (container query): a capa escala como um bloco e
+  nunca rola de lado. A altura fica reservada antes do primeiro desenho.
+  Sem JS: a previa PNG do kit (assets/capas/), no tema do sistema; em tela
+  estreita, a quadrada. O <pre> so aparece com JS (classe marca-js no <html>,
+  posta pelo script de tema do default.html). Texto da capa (descricao) vem de
+  modelos.json.
+{%- endcomment -%}
+{%- assign mc_chave = include.modelo -%}
+{%- assign mc_cols = include.colunas | default: 112 -%}
+{%- assign mc_linhas = include.linhas | default: 27 -%}
+{%- assign mc_cols_e = include.colunas_estreita | default: 62 -%}
+{%- assign mc_linhas_e = include.linhas_estreita | default: 29 -%}
+{%- capture mc_dados -%}
+{"modelo":{{ mc_chave | jsonify }}
+{%- if include.numero %},"numero":{{ include.numero | jsonify }}{% endif -%}
+{%- if include.data %},"data":{{ include.data | date: "%Y-%m-%d" | jsonify }}{% endif -%}
+{%- if include.versao %},"versao":{{ include.versao | jsonify }}{% endif -%}
+{%- if include.commit %},"commit":{{ include.commit | jsonify }}{% endif -%}
+}
+{%- endcapture -%}
+{%- comment -%}
+  Fundo de assinatura em heatmap (Abreu): vai com a predefinicao `profundo` do motor
+  (planos atras do calor, em paralaxe com o ponteiro e a rolagem) no lugar do plano unico
+  da tabela. O resto da assinatura (fundo, params) e' o de modelos.json.
+{%- endcomment -%}
+{%- assign mc_a = site.data.modelos[mc_chave].assinatura -%}
+{%- capture mc_params -%}
+{"modelo":{{ mc_chave | jsonify }}
+{%- if mc_a.efeito == 'heatmap' -%}
+,"assinatura":{"efeito":"heatmap","predefinicao":"profundo","fundo":{{ mc_a.fundo | default: 0.5 | jsonify }},"params":{{ mc_a.params | jsonify }}}
+{%- endif -%}
+}
+{%- endcapture -%}
+{%- assign mc_capas = '/assets/capas/' | append: mc_chave | relative_url -%}
+<figure class="marca-quadro marca-capa{% if include.classe %} {{ include.classe }}{% endif %}">
+  <pre data-marca-efeito="capa"
+       data-marca-predefinicao="{{ include.predefinicao | default: 'ficha' }}"
+       data-marca-semente="0"
+       data-marca-colunas="{{ mc_cols }}" data-marca-linhas="{{ mc_linhas }}"
+       data-marca-colunas-estreita="{{ mc_cols_e }}" data-marca-linhas-estreita="{{ mc_linhas_e }}"
+       data-marca-params="{{ mc_params | escape }}"
+       data-marca-dados="{{ mc_dados | escape }}"
+       data-marca-reativo
+       role="img" aria-label="findings/{{ mc_chave }} cover — not a medical device"
+       style="--marca-cols:{{ mc_cols }};--marca-linhas:{{ mc_linhas }};--marca-cols-estreita:{{ mc_cols_e }};--marca-linhas-estreita:{{ mc_linhas_e }}"></pre>
+  <noscript>
+    <picture>
+      <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="{{ mc_capas }}-quadrado-escuro.png">
+      <source media="(max-width: 640px)" srcset="{{ mc_capas }}-quadrado-claro.png">
+      <source media="(prefers-color-scheme: dark)" srcset="{{ mc_capas }}-previa-escuro.png">
+      <img src="{{ mc_capas }}-previa-claro.png" width="1200" height="630"
+           alt="findings/{{ mc_chave }} cover — not a medical device">
+    </picture>
+  </noscript>
+</figure>

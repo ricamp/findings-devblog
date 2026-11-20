@@ -1,34 +1,133 @@
 ---
 layout: default
 ---
+{% comment %}
+  Versao C · Editorial: o indice e' o sumario de uma revista.
+  - manchete: a legenda do site em serifa grande, o paragrafo de apresentacao ao lado;
+  - destaque: a entrada mais recente, com a capa viva larga se for estreia de modelo;
+  - sumario: as demais numa grade de 12 com tamanhos desiguais. Estreia vira uma
+    pagina-dupla (capa de um lado, texto do outro, alternando o lado). Entre duas
+    estreias, as entradas de texto dividem a linha: sozinha vira faixa larga; em par,
+    7 + 5 (e 5 + 7 na linha seguinte); sobrando tres, 4 + 4 + 4.
 
-<p class="lede">{{ site.tagline }}</p>
+  "Estreia" e' a mesma regra do post.html: arte_ascii no front matter e capa do kit
+  para o modelo em assets/capas/.
+{% endcomment %}
+{% assign codigos = "" %}
+{% for post in site.posts %}
+  {% assign codigo = "T" %}
+  {% if post.arte_ascii and post.model_key %}
+    {% assign previa = '/assets/capas/' | append: post.model_key | append: '-previa-claro.png' %}
+    {% assign achou = site.static_files | where: 'path', previa | size %}
+    {% if achou > 0 %}{% assign codigo = "E" %}{% endif %}
+  {% endif %}
+  {% assign codigos = codigos | append: codigo %}
+{% endfor %}
+{% assign cods = codigos | split: "" %}
+{% assign ultimo = site.posts | size | minus: 1 %}
 
-<p class="sub-lede">
-  <b>Findings</b> is a computer vision project for medical imaging: each model
-  detects one finding and turns it into a sentence of report text. Two are in
-  training right now — <a href="{{ '/models/' | relative_url }}">see what they
-  are</a>. This devblog is the public record of how that gets built — including
-  the runs that came out wrong.
-</p>
+<section class="manchete grade">
+  <p class="lede">{{ site.tagline }}</p>
+  <p class="sub-lede">
+    <b>Findings</b> is a computer vision project for medical imaging: each model
+    detects one finding and turns it into a sentence of report text. Two are in
+    training right now — <a href="{{ '/models/' | relative_url }}">see what they
+    are</a>. This devblog is the public record of how that gets built — including
+    the runs that came out wrong.
+  </p>
+</section>
 
-<p class="rotulo" style="margin-top:44px">Entries · newest first</p>
+<p class="rotulo indice-rotulo">Entries · newest first</p>
 
-<ul class="entradas">
-  {% for post in site.posts %}
-  <li class="entrada">
+{% assign destaque = site.posts.first %}
+{% if destaque %}
+<article class="destaque entrada grade{% if cods[0] == 'E' %} destaque-capa{% endif %}">
+  {% if cods[0] == 'E' %}
+  <div class="destaque-figura">
+    <a class="capa-link" href="{{ destaque.url | relative_url }}" tabindex="-1" aria-hidden="true">
+    {% include marca-capa.html modelo=destaque.model_key numero=destaque.numero data=destaque.date versao=destaque.model commit=destaque.commit classe="capa-larga" %}
+    </a>
+  </div>
+  {% endif %}
+  <div class="destaque-texto">
+    <p class="cartao-numero">{{ destaque.numero }}</p>
     <p class="entrada-meta">
-      <span>{{ post.numero }}</span>
-      <span>{{ post.date | date: "%Y-%m-%d" }}</span>
-      {% if post.model %}<span>{{ post.model }}</span>{% endif %}
-      {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
+      <span>{{ destaque.date | date: "%Y-%m-%d" }}</span>
+      {% if destaque.model %}<span>{{ destaque.model }}</span>{% endif %}
+      {% if destaque.tag %}<span class="etiqueta">{{ destaque.tag }}</span>{% endif %}
     </p>
-    <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-    {% if post.resumo %}<p class="entrada-resumo">{{ post.resumo }}</p>{% endif %}
-  </li>
-  {% endfor %}
-</ul>
+    <h2 class="entrada-titulo"><a href="{{ destaque.url | relative_url }}">{{ destaque.title }}</a></h2>
+    {% if destaque.resumo %}<p class="entrada-resumo">{{ destaque.resumo }}</p>{% endif %}
+  </div>
+</article>
+{% endif %}
 
+<ol class="sumario grade">
+  {% assign pos = 0 %}
+  {% assign n_estreias = 0 %}
+  {% for post in site.posts offset:1 %}
+    {% assign i = forloop.index %}
+    {% if cods[i] == "E" %}
+      {% assign pos = 0 %}
+      {% assign n_estreias = n_estreias | plus: 1 %}
+      {% assign lado = n_estreias | modulo: 2 %}
+  <li class="entrada cartao cartao-estreia {% if lado == 1 %}capa-esq{% else %}capa-dir{% endif %}">
+    <div class="cartao-capa">
+      <a class="capa-link" href="{{ post.url | relative_url }}" tabindex="-1" aria-hidden="true">
+      {% include marca-capa.html modelo=post.model_key numero=post.numero data=post.date versao=post.model commit=post.commit %}
+      </a>
+    </div>
+    <div class="cartao-texto">
+      <p class="cartao-numero">{{ post.numero }}</p>
+      <p class="entrada-meta">
+        <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+        {% if post.model %}<span>{{ post.model }}</span>{% endif %}
+        {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
+      </p>
+      <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      {% if post.resumo %}<p class="entrada-resumo">{{ post.resumo }}</p>{% endif %}
+    </div>
+  </li>
+    {% else %}
+      {% assign pos = pos | plus: 1 %}
+      {% assign adiante = 0 %}
+      {% for j in (i..ultimo) %}
+        {% if cods[j] == "E" %}{% break %}{% endif %}
+        {% assign adiante = adiante | plus: 1 %}
+      {% endfor %}
+      {% assign k = pos | minus: 1 %}
+      {% assign tam = k | plus: adiante %}
+      {% assign resto_tres = tam | modulo: 2 %}
+      {% assign inicio_tres = tam | minus: 3 %}
+      {% if tam == 1 %}
+        {% assign forma = "faixa" %}
+      {% elsif resto_tres == 1 and k >= inicio_tres %}
+        {% assign forma = "terco" %}
+      {% else %}
+        {% assign linha = k | divided_by: 2 | modulo: 2 %}
+        {% assign primeiro = k | modulo: 2 %}
+        {% if linha == 0 and primeiro == 0 %}{% assign forma = "largo" %}
+        {% elsif linha == 0 %}{% assign forma = "estreito" %}
+        {% elsif primeiro == 0 %}{% assign forma = "estreito" %}
+        {% else %}{% assign forma = "largo" %}{% endif %}
+      {% endif %}
+  <li class="entrada cartao cartao-{{ forma }}">
+    <p class="cartao-numero">{{ post.numero }}</p>
+    <div class="cartao-texto">
+      <p class="entrada-meta">
+        <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+        {% if post.model %}<span>{{ post.model }}</span>{% endif %}
+        {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
+      </p>
+      <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      {% if post.resumo %}<p class="entrada-resumo">{{ post.resumo }}</p>{% endif %}
+    </div>
+  </li>
+    {% endif %}
+  {% endfor %}
+</ol>
+
+<div class="grade">
 <p class="aviso">
   <b>Not a medical device.</b> This is a research and portfolio project. It is
   not cleared by ANVISA, the FDA, or any regulator, and nothing it produces
@@ -37,3 +136,4 @@ layout: default
   the radiologist signs it. All data used here is from public research datasets.
   No patient data from clinical practice enters this project.
 </p>
+</div>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="f/">
+<style>.fundo{fill:#F0EEE6}.f{fill:#1F1E1B}.barra{fill:#A95335}@media (prefers-color-scheme: dark){.fundo{fill:#17181A}.f{fill:#E9EAEC}.barra{fill:#C76C4B}}</style>
+<rect class="fundo" width="1024" height="1024" rx="184.32"/>
+<path class="f" d="M317.25 715.93V497.81H227.8V446.86H317.25V384.26Q317.25 346.42 341.45 324.41Q365.65 302.41 407.54 302.41H498.74V352.94H407.97Q391.34 352.94 382.34 360.98Q373.33 369.02 373.33 384.69V446.86H498.74V497.81H373.33V715.93Z"/>
+<path class="barra" d="M537.04 778.24 737.28 245.76H796.2L595.95 778.24Z"/>
+</svg>

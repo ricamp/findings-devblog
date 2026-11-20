@@ -4,6 +4,13 @@ title: "Models"
 permalink: /models/
 ---
 
+{% comment %}
+  Versao C · Editorial: uma pagina-dupla por linhagem (capa grande de um lado,
+  nome em serifa, descricao de modelos.json, o resumo publicado da entrada de
+  estreia e a lista das entradas do outro), alternando o lado. O texto de cima e'
+  o de sempre, so rearrumado na grade (as paginas-duplas vem antes, o texto depois).
+{% endcomment %}
+<section class="manchete grade">
 <p class="lede">What Findings is, and what is training inside it.</p>
 
 <p class="sub-lede">
@@ -13,7 +20,53 @@ permalink: /models/
   write anyway. The project is the thing being built; the models are how it
   gets built, and there is more than one.
 </p>
+</section>
 
+<p class="rotulo indice-rotulo">Entries by model</p>
+
+{% assign chaves = site.posts | map: "model_key" | uniq %}
+{% assign n_linhagem = 0 %}
+{% for chave in chaves %}
+  {% assign doModelo = site.posts | where: "model_key", chave %}
+  {% assign primeiro = doModelo | first %}
+  {% assign estreia = doModelo | where: "tag", "new model" | last %}
+  {% unless estreia %}{% assign estreia = doModelo | last %}{% endunless %}
+  {% assign ficha = site.data.modelos[chave] %}
+  {% assign previa = '/assets/capas/' | append: chave | append: '-previa-claro.png' %}
+  {% assign tem_capa = site.static_files | where: 'path', previa | size %}
+  {% assign n_linhagem = n_linhagem | plus: 1 %}
+  {% assign lado = n_linhagem | modulo: 2 %}
+<section class="linhagem grade {% if lado == 1 %}capa-esq{% else %}capa-dir{% endif %}{% if tem_capa == 0 %} sem-capa{% endif %}">
+  {% if tem_capa > 0 %}
+  <div class="linhagem-capa">
+    <a class="capa-link" href="{{ estreia.url | relative_url }}" tabindex="-1" aria-hidden="true">
+    {% include marca-capa.html modelo=chave classe="capa-larga" %}
+    </a>
+  </div>
+  {% endif %}
+  <div class="linhagem-texto">
+    <p class="rotulo">{{ primeiro.model_key | capitalize }} · {{ doModelo | size }} entries</p>
+    <h2 class="linhagem-nome">{{ primeiro.model_key | capitalize }}</h2>
+    {% if ficha.descricao %}<p class="linhagem-descricao">{{ ficha.descricao }}</p>{% endif %}
+    {% if estreia.resumo %}<p class="linhagem-resumo">{{ estreia.resumo }}</p>{% endif %}
+    <ol class="linhagem-entradas">
+      {% for post in doModelo %}
+      <li class="entrada">
+        <p class="entrada-meta">
+          <span>{{ post.numero }}</span>
+          <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+          <span>{{ post.model }}</span>
+          {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
+        </p>
+        <h3 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endfor %}
+
+<div class="grade modelos-texto">
 <div class="prosa">
 
   <h2>Damoiseau</h2>
@@ -62,30 +115,9 @@ permalink: /models/
   </p>
 
 </div>
+</div>
 
-<p class="rotulo" style="margin-top:52px">Entries by model</p>
-
-{% assign chaves = site.posts | map: "model_key" | uniq %}
-{% for chave in chaves %}
-  {% assign doModelo = site.posts | where: "model_key", chave %}
-  {% assign primeiro = doModelo | first %}
-  <p class="rotulo" style="margin-top:28px; color:var(--tinta-2)">{{ primeiro.model_key | capitalize }} · {{ doModelo | size }} entries</p>
-  <ul class="entradas" style="margin-top:12px">
-    {% for post in doModelo %}
-    <li class="entrada">
-      <p class="entrada-meta">
-        <span>{{ post.numero }}</span>
-        <span>{{ post.date | date: "%Y-%m-%d" }}</span>
-        <span>{{ post.model }}</span>
-        {% if post.tag %}<span class="etiqueta">{{ post.tag }}</span>{% endif %}
-      </p>
-      <h2 class="entrada-titulo"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-      {% if post.resumo %}<p class="entrada-resumo">{{ post.resumo }}</p>{% endif %}
-    </li>
-    {% endfor %}
-  </ul>
-{% endfor %}
-
+<div class="grade">
 <p class="aviso">
   <b>Not a medical device.</b> Findings is a research and portfolio project. No
   model here is cleared by ANVISA, the FDA, or any regulator, and nothing any of
@@ -94,3 +126,4 @@ permalink: /models/
   the radiologist signs it. All data comes from public research datasets. No
   patient data from clinical practice enters this project.
 </p>
+</div>

@@ -1,0 +1,3 @@
+Cópia gerada por findings-marca. Não editar aqui.
+Data: 2026-11-20
+Para mudar, edite em findings-marca e rode de novo: node gerar.mjs --site <pasta-do-site>
